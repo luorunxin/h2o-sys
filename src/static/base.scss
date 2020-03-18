@@ -1,0 +1,26 @@
+$body-bg: #f1f1f1; // body背景颜色
+$theme-colors: #ff8000; //主题颜色
+
+html, body, div, span, a, ul, ol, li, h1, h2, h3, h4, h5, h6, img, input, textarea, button{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+ul, ol, li{
+  list-style: none;
+}
+a{
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
+}
+input, textarea, button{
+  outline: none;
+}
+html,body{
+  background-color: $body-bg;
+  width: 100%;
+  height: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}

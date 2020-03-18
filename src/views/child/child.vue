@@ -1,15 +1,15 @@
 <template>
   <div>
-    <router-view />
+    child
   </div>
 </template>
 
 <script>
   export default {
-
-  }
+    name: "child"
+  };
 </script>
 
-<style lang="scss">
+<style scoped>
 
 </style>
