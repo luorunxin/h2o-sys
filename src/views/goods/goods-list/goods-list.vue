@@ -1,6 +1,8 @@
 <template>
   <div>
-    goods-list
+    <div v-for="item in 50" :key="item">
+      goods-list{{item}}
+    </div>
   </div>
 </template>
 
