@@ -1,15 +1,15 @@
 <template>
   <div>
-    child
+    goods-list
   </div>
 </template>
 
 <script>
   export default {
-    name: "child"
+    name: "goods-list"
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>
