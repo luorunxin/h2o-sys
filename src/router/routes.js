@@ -4,57 +4,33 @@ import {basicLayout, pageView} from '@/layouts'
     路由配置
  */
 
-const Father = () => import('@/views/father/father')
-const Child = () => import('@/views/child/child')
-const One = () => import('@/views/one/one')
-const Two = () => import('@/views/two/two')
-const Three = () => import('@/views/three/three')
+const GoodsList = () => import('@/views/goods/goods-list/goods-list')
 
 export default [
   {
     path: '/',
-    redirect: '/num',
+    redirect: '/goods',
     component: basicLayout,
     children: [
+
+
       {
-        path: '/num',
-        name: 'num',
+        path: '/goods',
+        name: 'goods',
         component: pageView,
-        redirect: '/num/one',
-        meta: {title: 'Num', level: 1,icon: 'icon-home'},
+        redirect: '/goods/list',
+        meta: {title: '商品', level: 1,icon: 'icon-home'},
         children: [
           {
-            path: '/num/one',
-            name: 'father_one',
-            component: One,
-            meta: {title: 'one', level: 2, icon: 'icon-mine'},
-          },
-          {
-            path: '/num/two',
-            name: 'father_two',
-            component: Two,
-            meta: {title: 'two', level: 2, icon: 'icon-mine'},
-          },
-          {
-            path: '/num/three',
-            name: 'father_three',
-            component: Three,
-            meta: {title: 'three', level: 2, icon: 'icon-mine'},
+            path: '/goods/list',
+            name: 'goods_list',
+            component: GoodsList,
+            meta: {title: '商品列表', level: 2, icon: 'icon-mine'},
           },
         ]
       },
-      {
-        path: '/father',
-        name: 'father',
-        component: Father,
-        meta: { title: 'Father', level: 1, icon: 'icon-home' }
-      },
-      {
-        path: '/child',
-        name: 'child',
-        component: Child,
-        meta: { title: 'Child', level: 1, icon: 'icon-home' }
-      }
+
+
     ]
   },
   {
