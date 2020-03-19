@@ -41,7 +41,7 @@
 <script>
   import routes from '@/router/routes.js'
   export default {
-    name: "menu",
+    name: "h2oMenuUnfold",
     data() {
       return {
         menus: [],
@@ -62,50 +62,42 @@
       }
     },
     watch: {
-      // active(newVal) {
-      //   this.$router.push(this.menus[this.open].children?this.menus[this.open].children[newVal].path:this.menus[this.open].path)
-      // }
-      '$route'(to){
-        console.log(to)
-        let fullPath = to.fullPath
-        for(let i in this.menus){
-          if(this.menus[i].path === fullPath){
-            this.menuActive = parseInt(i)
-            console.log(this.menuActive)
-            break;
-          }else {
-            for(let key in this.menus[i].children){
-              if(this.menus[i].children[key].path === fullPath) {
-                this.open = parseInt(i)
-                this.active = parseInt(key)
-                this.menuActive = null
-                console.log(this.open, this.active)
-                break;
+      '$route': {
+        handler(to){
+          routes[0].children.forEach(item => {
+            let obj = {}
+            obj = {...item.meta}
+            obj.path = item.path
+            if(item.children) {
+              obj.children = []
+              item.children.forEach(i => {
+                let o = {}
+                o = {...i.meta}
+                o.path = i.path
+                obj.children.push(o)
+              })
+            }
+            this.menus.push(obj)
+          })
+          let fullPath = to.fullPath
+          for(let i in this.menus){
+            if(this.menus[i].path === fullPath){
+              this.menuActive = parseInt(i)
+              break;
+            }else {
+              for(let key in this.menus[i].children){
+                if(this.menus[i].children[key].path === fullPath) {
+                  this.open = parseInt(i)
+                  this.active = parseInt(key)
+                  this.menuActive = null
+                  break;
+                }
               }
             }
           }
-        }
+        },
+        immediate: true
       }
-    },
-    created() {
-      routes[0].children.forEach(item => {
-        let obj = {}
-        obj = {...item.meta}
-        obj.path = item.path
-        if(item.children) {
-          obj.children = []
-          item.children.forEach(i => {
-            let o = {}
-            o = {...i.meta}
-            o.path = i.path
-            obj.children.push(o)
-          })
-        }
-        this.menus.push(obj)
-      })
-      this.active = JSON.parse(JSON.stringify(this.selected))
-      this.open = JSON.parse(JSON.stringify(this.menuOpen))
-      console.log(JSON.stringify(this.menus, null, 2))
     },
     methods: {
       activeMenu(index) {
