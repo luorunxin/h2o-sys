@@ -6,7 +6,7 @@
       :to="{path: item.children?'':item.path}"
     >
       <div
-        :class="['menu-single', {'active': menuActive == index}]"
+        :class="['menu-single', {'active': menuActive === index}]"
         :style="`font-size:${item.level==1?16:16-((item.level-1)*2)}px; padding: 0 20px 0 ${item.level*20}px;`"
         @click.stop="openMenu(index, item)"
       >
@@ -23,7 +23,7 @@
           :to="{path: i.path}"
         >
           <div
-            :class="['menu-single', {'active': active==ind && menuActive === null}]"
+            :class="['menu-single', {'active': active===ind && menuActive === null}]"
             :style="`font-size:${i.level==1?16:16-((i.level-1)*2)}px; padding: 0 20px 0 ${i.level*20}px;`"
             @click.stop="activeMenu(ind)"
           >
@@ -62,8 +62,29 @@
       }
     },
     watch: {
-      active(newVal) {
-        this.$router.push(this.menus[this.open].children?this.menus[this.open].children[newVal].path:this.menus[this.open].path)
+      // active(newVal) {
+      //   this.$router.push(this.menus[this.open].children?this.menus[this.open].children[newVal].path:this.menus[this.open].path)
+      // }
+      '$route'(to){
+        console.log(to)
+        let fullPath = to.fullPath
+        for(let i in this.menus){
+          if(this.menus[i].path === fullPath){
+            this.menuActive = parseInt(i)
+            console.log(this.menuActive)
+            break;
+          }else {
+            for(let key in this.menus[i].children){
+              if(this.menus[i].children[key].path === fullPath) {
+                this.open = parseInt(i)
+                this.active = parseInt(key)
+                this.menuActive = null
+                console.log(this.open, this.active)
+                break;
+              }
+            }
+          }
+        }
       }
     },
     created() {
