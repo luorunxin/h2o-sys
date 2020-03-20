@@ -24,6 +24,7 @@
     watch: {
       '$route': {
         handler(to){
+          this.breadcrumbs = []
           let matched = to.matched
           matched.forEach(item => {
             let obj = {}

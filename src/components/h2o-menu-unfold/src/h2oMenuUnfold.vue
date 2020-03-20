@@ -64,6 +64,7 @@
     watch: {
       '$route': {
         handler(to){
+          this.menus = []
           routes[0].children.forEach(item => {
             let obj = {}
             obj = {...item.meta}

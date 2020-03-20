@@ -5,14 +5,20 @@ import {basicLayout, pageView} from '@/layouts'
  */
 
 const GoodsList = () => import('@/views/goods/goods-list/goods-list');
-const ProductModification = () => import('@/views/goods/ProductModification');
+const ProductModification = () => import('@/views/goods/ProductModification/index');
 
 export default [
   {
     path: '/',
     redirect: '/goods',
     component: basicLayout,
+    meta: {title: '首页'},
     children: [
+
+
+
+
+
       {
         path: '/goods',
         name: 'goods',
@@ -30,13 +36,17 @@ export default [
             path: '/goods/ProductModification',
             name: 'ProductModification',
             component: ProductModification,
-            meta: {title: '编辑商品', level: 3, icon: 'icon-iconyonghu'},
+            meta: {title: '编辑商品', level: 2, icon: 'icon-bianji'},
           },
         ]
       },
-    ],
-    meta: {title: '首页'}
 
+
+
+
+
+
+    ],
   },
 
   {
