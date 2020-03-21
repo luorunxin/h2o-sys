@@ -9,6 +9,9 @@
         {{item.title}}
       </el-breadcrumb-item>
     </el-breadcrumb>
+    <el-row>
+      <el-button type="primary" size="medium " @click="addGoods">添加商品</el-button>
+    </el-row>
   </div>
 </template>
 
@@ -36,6 +39,16 @@
         immediate: true
       }
     },
+    methods: {
+      addGoods() {
+        this.$router.push({
+          name: 'ProductModification',
+          pragmas: {
+            id: 1
+          }
+        })
+      }
+    }
   };
 </script>
 
@@ -44,6 +57,7 @@
     width: 100%;
     height: 54px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 0 20px;
     border-bottom: 1px solid #f1f1f1;
