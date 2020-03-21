@@ -16,7 +16,10 @@
         </div>
         <i :class="['el-icon-arrow-down', {'open': open === index}]"></i>
       </div>
-      <div :class="['menu-item', {'open-menu-item': open === index}]">
+      <div
+        class="menu-item"
+        :style="{height: open === index?item.children.length*40+'px':'0px'}"
+      >
         <router-link
           v-for="(i, ind) in item.children"
           :key="ind"
@@ -142,15 +145,11 @@
     .el-icon-arrow-down{
       font-weight: bold;
       font-size: 14px;
-      transition: transform .3s;
+      transition: transform .5s;
     }
     .menu-item{
-      transition: max-height .6s;
-      max-height: 0px;
+      transition: height .5s;
       overflow: hidden;
-    }
-    .open-menu-item{
-      max-height: 1000px;
     }
     .active{
       background: $theme-colors;
