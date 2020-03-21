@@ -13,14 +13,49 @@
         <el-input class="w30" v-model="form.title" placeholder="请输入标题" clearable></el-input>
       </el-form-item>
       <el-form-item label="价格" prop="price">
-        <el-input class="w30" v-model="form.price" placeholder="请输入价格" clearable></el-input>
+        <el-input @input="checkPrice" class="w30" v-model="form.price" placeholder="请输入价格" clearable></el-input>
       </el-form-item>
       <el-form-item label="发货地址" prop="ship_address">
         <el-input class="w30" v-model="form.ship_address" placeholder="请输入发货地址" clearable></el-input>
       </el-form-item>
       <el-form-item label="快递费用" prop="courier_fees">
-        <el-input class="w30" v-model="form.courier_fees" placeholder="请输入快递费用" clearable></el-input>
+        <el-input @input="checkCourierFees" class="w30" v-model="form.courier_fees" placeholder="请输入快递费用" clearable></el-input>
       </el-form-item>
+      <div v-for="(item, index) in form.parameter" :key="item.key+index">
+        <el-form-item
+          class="itemparameter"
+          label="产品参数"
+          :prop="`parameter.${index}.key`"
+          :rules="{required:true, message:'请输入参数名称', trigger: ['blur','change']}"
+        >
+          <el-input class="parameter" v-model="item.key" placeholder="请输入参数名称" clearable></el-input>
+        </el-form-item>
+        <el-form-item
+          class="itemparameter"
+          :prop="`parameter.${index}.value`"
+          :rules="{required:true, message:'请输入参数值', trigger: ['blur','change']}"
+        >
+          <el-input class="parameter" v-model="item.value" placeholder="请输入参数值" clearable></el-input>
+          <el-button
+            v-show="form.parameter.length > 1"
+            @click.stop="removeParameters(index)"
+            class="remove-parameter"
+            type="danger"
+            size="small"
+          >
+            删除
+          </el-button>
+          <el-button
+            v-show="index === form.parameter.length-1"
+            @click.stop="addParameters"
+            class="add-parameter"
+            type="primary"
+            size="small"
+          >
+            新增
+          </el-button>
+        </el-form-item>
+      </div>
       <el-form-item label="商品类别" prop="goods_category_id">
         <el-select class="w30" v-model="form.goods_category_id" filterable placeholder="请选择商品类别">
           <el-option
@@ -31,35 +66,16 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item
-        label="产品参数"
-        v-for="(item, index) in form.parameter"
-        :key="item.key+index"
-      >
-        <el-input class="parameter" v-model="item.key" placeholder="请输入参数名称"></el-input>
-        <span class="maohao">:</span>
-        <el-input class="parameter" v-model="item.value" placeholder="请输入参数值"></el-input>
-        <el-button
-          v-show="form.parameter.length > 1"
-          @click.stop="removeParameters(index)"
-          class="remove-parameter"
-          type="danger"
-          size="small"
-        >
-          删除
-        </el-button>
-        <el-button
-          v-show="index === form.parameter.length-1"
-          @click.stop="addParameters"
-          class="add-parameter"
-          type="primary"
-          size="small"
-        >
-          新增
-        </el-button>
-      </el-form-item>
+      <Clothing
+        :form="form"
+        v-show="form.goods_category_id === 1001"
+        @changeGender="changeGender"
+        @changePart="changePart"
+        @addAmount="addAmount"
+        @removeAmount="removeAmount"
+        @onCheckAmount="onCheckAmount"
+      />
     </el-form>
-    <Clothing v-show="form.goods_category_id === 1001" />
     <el-form
       label-width="80px"
       label-position="left"
@@ -103,6 +119,29 @@
               code: 1001,
               name: '服装'
             }
+          ],
+          gender: 1,
+          part: null,
+          parts: [
+            {
+              code: 10010,
+              name: '上装'
+            },
+            {
+              code: 10011,
+              name: '下装'
+            },
+            {
+              code: 10012,
+              name: '鞋子'
+            }
+          ],
+          clothing_amounts: [
+            {
+              color: '',
+              size: '',
+              amount: null
+            }
           ]
         },
         rule: {
@@ -120,12 +159,19 @@
           ],
           goods_category_id: [
             {required: true, message: '请选择商品类别', trigger: ['blur','change']}
+          ],
+          gender: [
+            {required: true, message: '请选择性别', trigger: ['change']}
+          ],
+          part: [
+            {required: true, message: '请选择服装部位', trigger: ['blur','change']}
           ]
         }
       }
     },
     methods: {
       submitForm(formName) {
+        console.log(JSON.stringify(this.form,null,2))
         this.$refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
@@ -143,6 +189,31 @@
       },
       removeParameters(index) {
         this.form.parameter.splice(index,1)
+      },
+      addAmount() {
+        this.form.clothing_amounts.push({
+          color: '',
+          size: '',
+          amount: null
+        })
+      },
+      removeAmount(index) {
+        this.form.clothing_amounts.splice(index,1)
+      },
+      checkPrice(value) {
+        this.form.price= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+      },
+      checkCourierFees(value) {
+        this.form.courier_fees= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+      },
+      onCheckAmount(value,index) {
+        this.form.clothing_amounts[index].amount= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+      },
+      changeGender(value) {
+        this.form.gender = value
+      },
+      changePart(value) {
+        this.form.part = value
       }
     }
   };
@@ -156,12 +227,12 @@
         width: 30%;
         min-width: 300px;
       }
+      .itemparameter{
+        display: inline-block;
+      }
       .parameter{
         width: 10%;
         min-width: 150px;
-      }
-      .maohao{
-        padding: 0 10px;
       }
       .remove-parameter{
         margin-left: 40px;
