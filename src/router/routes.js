@@ -4,8 +4,8 @@ import {basicLayout, pageView} from '@/layouts'
  路由配置
  */
 
-const GoodsList = () => import('@/views/goods/goods-list/goods-list');
-const ProductModification = () => import('@/views/goods/ProductModification/index');
+const GoodsList = () => import('@/views/goods/goodsList');
+const AddUpdateGoods = () => import('@/views/goods/addUpdateGoods');
 
 export default [
   {
@@ -33,11 +33,11 @@ export default [
             meta: {title: '商品列表', level: 2, icon: 'icon-shangpinliebiao1'},
           },
           {
-            path: '/goods/ProductModification',
-            name: 'ProductModification',
-            component: ProductModification,
-            meta: {title: '编辑商品', level: 2, icon: 'icon-bianji'},
-          },
+            path: '/goods/addUpdateGoods',
+            name: 'goods_addUpdateGoods',
+            component: AddUpdateGoods,
+            meta: {title: '添加商品'},
+          }
         ]
       },
 

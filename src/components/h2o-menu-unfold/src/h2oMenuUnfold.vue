@@ -70,18 +70,22 @@
           this.menus = []
           routes[0].children.forEach(item => {
             let obj = {}
-            obj = {...item.meta}
-            obj.path = item.path
-            if(item.children) {
-              obj.children = []
-              item.children.forEach(i => {
-                let o = {}
-                o = {...i.meta}
-                o.path = i.path
-                obj.children.push(o)
-              })
+            if(item.meta && item.meta.title && item.meta.level && item.meta.icon){
+              obj = {...item.meta}
+              obj.path = item.path
+              if(item.children) {
+                obj.children = []
+                item.children.forEach(i => {
+                  let o = {}
+                  if(i.meta && i.meta.title && i.meta.level && i.meta.icon){
+                    o = {...i.meta}
+                    o.path = i.path
+                    obj.children.push(o)
+                  }
+                })
+              }
+              this.menus.push(obj)
             }
-            this.menus.push(obj)
           })
           let fullPath = to.fullPath
           for(let i in this.menus){

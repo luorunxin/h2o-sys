@@ -9,9 +9,6 @@
         {{item.title}}
       </el-breadcrumb-item>
     </el-breadcrumb>
-    <el-row>
-      <el-button type="primary" size="medium " @click="addGoods">添加商品</el-button>
-    </el-row>
   </div>
 </template>
 
