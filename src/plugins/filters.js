@@ -41,3 +41,14 @@ Vue.filter('date', (val,format) => {
   }
   return value
 })
+
+/**
+ *  服务类型转换
+ */
+
+Vue.filter('getCategory', (val, categoryList) => {
+  val = categoryList.filter(item => {
+    return val == item.code
+  })
+  return val[0].name
+})

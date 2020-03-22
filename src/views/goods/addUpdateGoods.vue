@@ -21,34 +21,34 @@
       <el-form-item label="快递费用" prop="courier_fees">
         <el-input @input="checkCourierFees" class="w30" v-model="form.courier_fees" placeholder="请输入快递费用" clearable></el-input>
       </el-form-item>
-      <div v-for="(item, index) in form.parameter" :key="item.key+index">
+      <div v-for="(item, index) in form.parameterss" :key="index">
         <el-form-item
-          class="itemparameter"
+          class="itemparameterss"
           label="产品参数"
-          :prop="`parameter.${index}.key`"
+          :prop="`parameterss.${index}.key`"
           :rules="{required:true, message:'请输入参数名称', trigger: ['blur','change']}"
         >
-          <el-input class="parameter" v-model="item.key" placeholder="请输入参数名称" clearable></el-input>
+          <el-input class="parameterss" v-model="item.key" placeholder="请输入参数名称" clearable></el-input>
         </el-form-item>
         <el-form-item
-          class="itemparameter"
-          :prop="`parameter.${index}.value`"
+          class="itemparameterss"
+          :prop="`parameterss.${index}.value`"
           :rules="{required:true, message:'请输入参数值', trigger: ['blur','change']}"
         >
-          <el-input class="parameter" v-model="item.value" placeholder="请输入参数值" clearable></el-input>
+          <el-input class="parameterss" v-model="item.value" placeholder="请输入参数值" clearable></el-input>
           <el-button
-            v-show="form.parameter.length > 1"
-            @click.stop="removeParameters(index)"
-            class="remove-parameter"
+            v-show="form.parameterss.length > 1"
+            @click.stop="removeparametersss(index)"
+            class="remove-parameterss"
             type="danger"
             size="small"
           >
             删除
           </el-button>
           <el-button
-            v-show="index === form.parameter.length-1"
-            @click.stop="addParameters"
-            class="add-parameter"
+            v-show="index === form.parameterss.length-1"
+            @click.stop="addparametersss"
+            class="add-parameterss"
             type="primary"
             size="small"
           >
@@ -75,12 +75,6 @@
         @removeAmount="removeAmount"
         @onCheckAmount="onCheckAmount"
       />
-    </el-form>
-    <el-form
-      label-width="80px"
-      label-position="left"
-      size="small"
-    >
       <el-form-item>
         <el-button type="primary" @click="submitForm('form')">提交</el-button>
       </el-form-item>
@@ -102,7 +96,7 @@
           price: null,
           ship_address: '',
           courier_fees: null,
-          parameter: [
+          parameterss: [
             {
               key: '',
               value: ''
@@ -114,28 +108,10 @@
             'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584820368048&di=5494afdbc18f948af5c198673e44fea4&imgtype=0&src=http%3A%2F%2Fuploads.xuexila.com%2Fallimg%2F1610%2F865-161022163028.jpg'
           ],
           goods_category_id: null,
-          goods_categorys: [
-            {
-              code: 1001,
-              name: '服装'
-            }
-          ],
+          goods_categorys: [],
           gender: 1,
-          part: null,
-          parts: [
-            {
-              code: 10010,
-              name: '上装'
-            },
-            {
-              code: 10011,
-              name: '下装'
-            },
-            {
-              code: 10012,
-              name: '鞋子'
-            }
-          ],
+          part_id: null,
+          parts: [],
           clothing_amounts: [
             {
               color: '',
@@ -169,26 +145,65 @@
         }
       }
     },
+    mounted() {
+      this.getCategoryList()
+      this.getTypesList()
+    },
     methods: {
       submitForm(formName) {
-        console.log(JSON.stringify(this.form,null,2))
+        const loading =this.$loading({
+          target: document.querySelector('.top-form'),
+          text: '提交中...',
+        })
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.form.price = parseFloat(this.form.price)
+            this.form.courier_fees = parseFloat(this.form.courier_fees)
+            this.form.clothing_amounts.forEach(item => {
+              item.amount = parseFloat(item.amount)
+            })
+            let parameter = ''
+            this.form.parameterss.forEach((item,index) => {
+              if(index == this.form.parameterss.length-1){
+                parameter += item.key + ':' + item.value
+              }else {
+                parameter += item.key + ':' + item.value + ';'
+              }
+            })
+            this.form.parameter = parameter
+            this.$ajax('/saveGoods',JSON.stringify(this.form)).then(res => {
+              loading.close()
+              if(res.status == 200){
+                this.$notify.success({
+                  title: '提示',
+                  message: '商品添加成功啦!!!'
+                })
+                this.$router.push({
+                  path: '/goods/list'
+                })
+              }else{
+                this.$notify.error({
+                  title: '提示',
+                  message: res.message
+                })
+              }
+            }).catch(err => {
+              console.error(err)
+              loading.close()
+            })
           } else {
-            console.log('error submit!!');
             return false;
           }
-        });
+        })
       },
-      addParameters() {
-        this.form.parameter.push({
+      addparametersss() {
+        this.form.parameterss.push({
           key: '',
           value: ''
         })
       },
-      removeParameters(index) {
-        this.form.parameter.splice(index,1)
+      removeparametersss(index) {
+        this.form.parameterss.splice(index,1)
       },
       addAmount() {
         this.form.clothing_amounts.push({
@@ -207,13 +222,31 @@
         this.form.courier_fees= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
       },
       onCheckAmount(value,index) {
-        this.form.clothing_amounts[index].amount= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+        this.form.clothing_amounts[index].amount= value.match(/\d+/) ? value.match(/\d+/)[0] : ''
       },
       changeGender(value) {
         this.form.gender = value
       },
       changePart(value) {
         this.form.part = value
+      },
+      getCategoryList() {
+        this.$ajax('/getCategoryList').then(res => {
+          if(res.status == 200) {
+            this.form.goods_categorys = res.result
+          }
+        }).catch(err => {
+          console.error(err)
+        })
+      },
+      getTypesList() {
+        this.$ajax('/getTypesList').then(res => {
+          if(res.status == 200) {
+            this.form.parts = res.result
+          }
+        }).catch(err => {
+          console.error(err)
+        })
       }
     }
   };
@@ -227,17 +260,17 @@
         width: 30%;
         min-width: 300px;
       }
-      .itemparameter{
+      .itemparameterss{
         display: inline-block;
       }
-      .parameter{
+      .parameterss{
         width: 10%;
         min-width: 150px;
       }
-      .remove-parameter{
+      .remove-parameterss{
         margin-left: 40px;
       }
-      .add-parameter{
+      .add-parameterss{
         margin-left: 20px;
       }
     }

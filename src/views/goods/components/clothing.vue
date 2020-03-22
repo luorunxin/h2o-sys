@@ -7,7 +7,7 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="服装部位" prop="part">
-      <el-select @change="changePart" class="w30" v-model="form.part" filterable placeholder="请选择服装部位">
+      <el-select @change="changePart" class="w30" v-model="form.part_id" filterable placeholder="请选择服装部位">
         <el-option
           v-for="item in form.parts"
           :key="item.code"
@@ -18,7 +18,7 @@
     </el-form-item>
     <div v-for="(item, index) in form.clothing_amounts" :key="index">
       <el-form-item
-        class="itemparameter"
+        class="itemparameterss"
         label="商品库存"
         :prop="`clothing_amounts.${index}.color`"
         :rules="{required:true, message:'请输入颜色', trigger: ['blur','change']}"
@@ -26,14 +26,14 @@
         <el-input class="parameter" v-model="item.color" placeholder="请输入颜色" clearable></el-input>
       </el-form-item>
       <el-form-item
-        class="itemparameter"
+        class="itemparameterss"
         :prop="`clothing_amounts.${index}.size`"
         :rules="{required:true, message:'请输入尺码', trigger: ['blur','change']}"
       >
         <el-input class="parameter" v-model="item.size" placeholder="请输入尺码" clearable></el-input>
       </el-form-item>
       <el-form-item
-        class="itemparameter"
+        class="itemparameterss"
         :prop="`clothing_amounts.${index}.amount`"
         :rules="{required:true, message:'请输入库存量', trigger: ['blur','change']}"
       >
@@ -99,7 +99,7 @@
     width: 10%;
     min-width: 150px;
   }
-  .itemparameter{
+  .itemparameterss{
     display: inline-block;
   }
   .remove-parameter{

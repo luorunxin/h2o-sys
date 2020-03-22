@@ -7,15 +7,15 @@ let axios = Axios.create({
 })
 
 axios.interceptors.request.use(req => {
-  console.log(req)
+  return req
 },err => {
-  console.log(err)
+  console.error(err)
 })
 
 axios.interceptors.response.use(res => {
-  console.log(res)
+  return res
 },err => {
-  console.log(err)
+  console.error(err)
 })
 
 export default axios
