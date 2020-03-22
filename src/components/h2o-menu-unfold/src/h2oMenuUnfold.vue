@@ -18,7 +18,7 @@
       </div>
       <div
         class="menu-item"
-        :style="{height: open === index?item.children.length*40+'px':'0px'}"
+        :style="{height: item.children && open === index?item.children.length*40+'px':'0px'}"
       >
         <router-link
           v-for="(i, ind) in item.children"

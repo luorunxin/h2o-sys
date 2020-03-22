@@ -42,10 +42,6 @@ export default [
       },
 
 
-
-
-
-
     ],
   },
 
