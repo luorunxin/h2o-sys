@@ -6,7 +6,7 @@
         <el-radio :label="2">女</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="服装部位" prop="part">
+    <el-form-item label="服装部位" prop="part_id">
       <el-select @change="changePart" class="w30" v-model="form.part_id" filterable placeholder="请选择服装部位">
         <el-option
           v-for="item in form.parts"
