@@ -6,7 +6,7 @@
         <el-radio :label="2">女</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="服装部位" prop="part">
+    <el-form-item label="服装部位" prop="part_id">
       <el-select @change="changePart" class="w30" v-model="form.part_id" filterable placeholder="请选择服装部位">
         <el-option
           v-for="item in form.parts"
@@ -66,10 +66,25 @@
     name: "clothing",
     data() {
       return {
-
+        id:null,
+        form1:null
       }
     },
     props: ['form'],
+    created() {
+      this.form1 = this.form
+      this.id = this.$route.query.id;
+      this.$ajax('/getGoodsById', {id: this.id}).then(res => {
+        if (res.status == 200) {
+          console.log(res.result);
+          this.form1 = res.result;
+          this.form1.gender = res.result.type[0].gender;
+          this.form1.goods_category_id = res.result.goods_category_id;
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+    },
     methods: {
       changePart() {
         this.$emit('changePart', this.form.part)

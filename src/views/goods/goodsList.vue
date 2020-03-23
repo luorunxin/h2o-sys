@@ -133,9 +133,13 @@
         label="操作">
         <template slot-scope="scope">
           <!--<el-button @click="handleClick(scope.row)" type="text" size="mini">详情</el-button>-->
-          <el-button @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
-          <el-button @click="deleteRow(scope.row)" type="text" size="mini">删除
-          </el-button>
+          <el-button style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
+          <el-popconfirm
+            :title="`确定删除 '${scope.row.title}' 此商品吗？`"
+            @onConfirm="deleteRow(scope.row)"
+          >
+            <el-button slot="reference" type="text" size="mini">删除</el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -179,9 +183,9 @@
           page: this.page,
           size: this.size
         }
-        this.$ajax('/goodsList',JSON.stringify(params)).then(res => {
+        this.$ajax('/goodsList', JSON.stringify(params)).then(res => {
           this.loading = false
-          if(res.status == 200) {
+          if (res.status == 200) {
             this.tableData = res.result
             this.tableData.forEach(item => {
               item.parameters = this.getParameters(item.parameter)
@@ -189,7 +193,7 @@
                 return m.src
               })
             })
-          }else{
+          } else {
             this.$notify.error({
               title: '提示',
               message: res.message
@@ -218,18 +222,40 @@
       },
       //编辑
       handleClick(row) {
-        console.log(row);
         this.$router.push({
-          name:'ProductModification',
+          path: '/goods/addUpdateGoods',
+          query: {
+            id: row.id,
+            type: 2
+          }
         })
+
       },
       //删除行
-      deleteRow(index, rows) {
-        rows.splice(index, 1);
+      deleteRow(rows) {
+        this.loading = true
+        this.$ajax('http://192.168.0.103:3003/deleteGoodsById', {id: rows.id}).then(res=>{
+          if (res.status == 200) {
+            this.$notify.success({
+              title: '提示',
+              message: '商品删除成功啦!!!'
+            })
+            this.goodsList()
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          this.loading = false
+        }).catch(err=>{
+          console.log(err)
+          this.loading = false
+        })
       },
       getCategoryList() {
         this.$ajax('/getCategoryList').then(res => {
-          if(res.status == 200) {
+          if (res.status == 200) {
             this.categoryList = res.result
           }
         }).catch(err => {
@@ -238,7 +264,7 @@
       },
       getTypesList() {
         this.$ajax('/getTypesList').then(res => {
-          if(res.status == 200) {
+          if (res.status == 200) {
             this.typesList = res.result
           }
         }).catch(err => {
@@ -250,28 +276,34 @@
 </script>
 
 <style lang="scss" scoped>
-  .goodsList{
+  .goodsList {
     padding: 20px;
-    .tabel-top{
+
+    .tabel-top {
       padding-bottom: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .pagination{
+
+    .pagination {
       margin-top: 20px;
     }
+
     .demo-table-expand label {
       color: #99a9bf;
     }
+
     .demo-table-expand .el-form-item {
       margin-right: 0;
       margin-bottom: 0;
-      .price{
+
+      .price {
         color: red;
       }
     }
-    .w100{
+
+    .w100 {
       display: inline-block;
       min-width: 100px;
     }

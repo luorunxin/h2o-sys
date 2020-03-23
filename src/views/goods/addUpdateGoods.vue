@@ -19,7 +19,8 @@
         <el-input class="w30" v-model="form.ship_address" placeholder="请输入发货地址" clearable></el-input>
       </el-form-item>
       <el-form-item label="快递费用" prop="courier_fees">
-        <el-input @input="checkCourierFees" class="w30" v-model="form.courier_fees" placeholder="请输入快递费用" clearable></el-input>
+        <el-input @input="checkCourierFees" class="w30" v-model="form.courier_fees" placeholder="请输入快递费用"
+                  clearable></el-input>
       </el-form-item>
       <div v-for="(item, index) in form.parameterss" :key="index">
         <el-form-item
@@ -84,6 +85,7 @@
 
 <script>
   import Clothing from './components/clothing'
+
   export default {
     name: "addUpdateGoods",
     components: {
@@ -92,66 +94,116 @@
     data() {
       return {
         form: {
+          //商品标题
           title: '',
+          //商品价格
           price: null,
+          //发货地址
           ship_address: '',
+          //快递费用
           courier_fees: null,
+          //商品参数
           parameterss: [
             {
               key: '',
               value: ''
             }
           ],
+          //图片
           srcs: [
             'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584820332151&di=ce29625309c3f15869cf3c44030ad1ea&imgtype=0&src=http%3A%2F%2F46.s21i-2.faidns.com%2F2841046%2F2%2FABUIABACGAAg5Ou0mQUo1pmzjwMw6Ac4lAU.jpg',
             'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584820350866&di=7a7d124698ace91b20d187590de52da6&imgtype=0&src=http%3A%2F%2Fa3.att.hudong.com%2F68%2F61%2F300000839764127060614318218_950.jpg',
             'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1584820368048&di=5494afdbc18f948af5c198673e44fea4&imgtype=0&src=http%3A%2F%2Fuploads.xuexila.com%2Fallimg%2F1610%2F865-161022163028.jpg'
           ],
+          //商品类别 如服装
           goods_category_id: null,
+          //1001是服装
           goods_categorys: [],
-          gender: 1,
+          //1男2女
+          gender: null,
+          //服装部位
           part_id: null,
+          //服装部位对应的数字
           parts: [],
+          //颜色 大小 和库存量
           clothing_amounts: [
             {
               color: '',
               size: '',
               amount: null
             }
-          ]
+          ],
+          ss:[]
         },
         rule: {
           title: [
-            {required: true, message: '请输入标题', trigger: ['blur','change']}
+            {required: true, message: '请输入标题', trigger: ['blur', 'change']}
           ],
           price: [
-            {required: true, message: '请输入价格', trigger: ['blur','change']}
+            {required: true, message: '请输入价格', trigger: ['blur', 'change']}
           ],
           ship_address: [
-            {required: true, message: '请输入发货地址', trigger: ['blur','change']}
+            {required: true, message: '请输入发货地址', trigger: ['blur', 'change']}
           ],
           courier_fees: [
-            {required: true, message: '请输入快递费用', trigger: ['blur','change']}
+            {required: true, message: '请输入快递费用', trigger: ['blur', 'change']}
           ],
           goods_category_id: [
-            {required: true, message: '请选择商品类别', trigger: ['blur','change']}
+            {required: true, message: '请选择商品类别', trigger: ['blur', 'change']}
           ],
           gender: [
             {required: true, message: '请选择性别', trigger: ['change']}
           ],
           part: [
-            {required: true, message: '请选择服装部位', trigger: ['blur','change']}
+            {required: true, message: '请选择服装部位', trigger: ['blur', 'change']}
           ]
-        }
+        },
       }
     },
     mounted() {
       this.getCategoryList()
       this.getTypesList()
+      if(this.$route.query.type == 2) {
+        this.getGoodsById(this.$route.query.id)
+      }
     },
     methods: {
+      getGoodsById(id) {
+        const loading = this.$loading({
+          target: document.querySelector('.top-form'),
+          text: '加载中...',
+        })
+        this.$ajax('/getGoodsById', {id}).then(res => {
+          if (res.status == 200) {
+            Object.assign(this.form, res.result)
+            this.form.clothing_amounts = []
+            this.form.parameterss = this.getParameters(res.result.parameter);
+            this.form.amounts.forEach(item => {
+              let obj = {}
+              obj.color = item.color
+              obj.size = item.size
+              obj.amount = item.amount
+              this.form.clothing_amounts.push(obj)
+            })
+            this.form.type.forEach(item => {
+              this.form.gender = item.gender;
+              this.form.goods_categorys_id = item.goods_category_id;
+              this.form.part_id = item.part_id;
+            });
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          loading.close()
+        }).catch(err => {
+          console.error(err);
+          loading.close()
+        })
+      },
       submitForm(formName) {
-        const loading =this.$loading({
+        const loading = this.$loading({
           target: document.querySelector('.top-form'),
           text: '提交中...',
         })
@@ -163,25 +215,25 @@
               item.amount = parseFloat(item.amount)
             })
             let parameter = ''
-            this.form.parameterss.forEach((item,index) => {
-              if(index == this.form.parameterss.length-1){
+            this.form.parameterss.forEach((item, index) => {
+              if (index == this.form.parameterss.length - 1) {
                 parameter += item.key + ':' + item.value
-              }else {
+              } else {
                 parameter += item.key + ':' + item.value + ';'
               }
             })
             this.form.parameter = parameter
-            this.$ajax('/saveGoods',JSON.stringify(this.form)).then(res => {
+            this.$ajax('/saveGoods', JSON.stringify(this.form)).then(res => {
               loading.close()
-              if(res.status == 200){
+              if (res.status == 200) {
                 this.$notify.success({
                   title: '提示',
-                  message: '商品添加成功啦!!!'
+                  message: this.$route.query.type===1?'商品添加成功啦!!!':'商品修改成功啦!!!'
                 })
                 this.$router.push({
                   path: '/goods/list'
                 })
-              }else{
+              } else {
                 this.$notify.error({
                   title: '提示',
                   message: res.message
@@ -203,7 +255,7 @@
         })
       },
       removeparametersss(index) {
-        this.form.parameterss.splice(index,1)
+        this.form.parameterss.splice(index, 1)
       },
       addAmount() {
         this.form.clothing_amounts.push({
@@ -213,16 +265,16 @@
         })
       },
       removeAmount(index) {
-        this.form.clothing_amounts.splice(index,1)
+        this.form.clothing_amounts.splice(index, 1)
       },
       checkPrice(value) {
-        this.form.price= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+        this.form.price = value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
       },
       checkCourierFees(value) {
-        this.form.courier_fees= value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
+        this.form.courier_fees = value.match(/\d+(\.\d{0,2})?/) ? value.match(/\d+(\.\d{0,2})?/)[0] : ''
       },
-      onCheckAmount(value,index) {
-        this.form.clothing_amounts[index].amount= value.match(/\d+/) ? value.match(/\d+/)[0] : ''
+      onCheckAmount(value, index) {
+        this.form.clothing_amounts[index].amount = value.match(/\d+/) ? value.match(/\d+/)[0] : ''
       },
       changeGender(value) {
         this.form.gender = value
@@ -232,7 +284,7 @@
       },
       getCategoryList() {
         this.$ajax('/getCategoryList').then(res => {
-          if(res.status == 200) {
+          if (res.status == 200) {
             this.form.goods_categorys = res.result
           }
         }).catch(err => {
@@ -241,7 +293,7 @@
       },
       getTypesList() {
         this.$ajax('/getTypesList').then(res => {
-          if(res.status == 200) {
+          if (res.status == 200) {
             this.form.parts = res.result
           }
         }).catch(err => {
@@ -253,24 +305,29 @@
 </script>
 
 <style lang="scss" scoped>
-  .add-update-goods{
+  .add-update-goods {
     padding: 20px;
-    .top-form{
-      .w30{
+
+    .top-form {
+      .w30 {
         width: 30%;
         min-width: 300px;
       }
-      .itemparameterss{
+
+      .itemparameterss {
         display: inline-block;
       }
-      .parameterss{
+
+      .parameterss {
         width: 10%;
         min-width: 150px;
       }
-      .remove-parameterss{
+
+      .remove-parameterss {
         margin-left: 40px;
       }
-      .add-parameterss{
+
+      .add-parameterss {
         margin-left: 20px;
       }
     }
