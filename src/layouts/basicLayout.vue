@@ -1,6 +1,6 @@
 <template>
-  <div class="default-layout">
-    <div class="menu-box">
+  <div class="default-layout" :style="{paddingLeft: unfold?'256px':'54px'}">
+    <div class="menu-box" :style="{width:unfold?'256px':'54px'}">
       <div class="menu-top">
         <router-link to="/">
           <div class="logo">
@@ -8,11 +8,14 @@
           </div>
         </router-link>
       </div>
-      <Menu></Menu>
+      <Menu :unfold="unfold" />
     </div>
     <div class="content-box">
-      <div class="content-box-header">
-        <i class="iconfont icon-toggle-right" @click="shrink"></i>
+      <div :class="['content-box-header',{'header-unfold':unfold},{'header-fold':!unfold}]">
+        <i
+          :class="['iconfont', 'icon-toggle-right', {'rotate0':!unfold}, {'rotate180':unfold}]"
+          @click="shrink"
+        ></i>
         <div class="personal-box">
           <el-tooltip class="item" effect="dark" content="暂无消息" placement="bottom">
             <i class="el-icon-message-solid"></i>
@@ -39,15 +42,20 @@
 </template>
 
 <script>
-  import Menu from '@/components/h2o-menu-unfold'
+  import Menu from '@/components/h2o-menu'
   export default {
     name: "basicLayout",
     components: {
       Menu
     },
+    data() {
+      return {
+        unfold: true
+      }
+    },
     methods: {
       shrink() {
-
+        this.unfold = !this.unfold
       }
     }
   };
@@ -61,19 +69,20 @@
     display: flex;
     overflow: hidden;
     position: relative;
-    padding-left: 256px;
+    transition: padding-left .5s;
     .menu-box{
       border-right: 1px solid #eaeaea;
       box-shadow: 2px 0 10px rgba(193, 201, 226, 0.5);
       width: 256px;
       max-width: 256px;
-      min-width: 256px;
+      min-width: 56px;
       height: 100%;
       position: fixed;
       top: 0;
       left: 0;
       z-index: 999;
       background: white;
+      transition: width .5s;
       .menu-top{
         height: 64px;
         width: 100%;
@@ -97,8 +106,14 @@
       position: relative;
       overflow-y: scroll;
       padding-top: 64px;
-      .content-box-header{
+      .header-unfold{
         width: calc(100% - 256px);
+      }
+      .header-fold{
+        width: calc(100% - 56px);
+      }
+      .content-box-header{
+        transition: width .5s;
         height: 64px;
         border-bottom: 1px solid #eaeaea;
         box-shadow: 0 2px 5px rgba(226, 226, 226, 0.50);
@@ -112,9 +127,15 @@
         z-index: 998;
         .icon-toggle-right{
           font-size: 20px;
-          transform: rotate(180deg);
           cursor: pointer;
           color: $theme-colors;
+          transition: transform .5s;
+        }
+        .rotate0{
+          transform: rotate(0deg);
+        }
+        .rotate180{
+          transform: rotate(180deg);
         }
         .personal-box{
           display: flex;

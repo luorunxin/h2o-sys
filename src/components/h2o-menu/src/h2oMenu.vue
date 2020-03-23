@@ -9,16 +9,42 @@
         :class="['menu-single', {'active': menuActive === index}]"
         :style="`font-size:${item.level==1?16:16-((item.level-1)*2)}px; padding: 0 20px 0 ${item.level*20}px;`"
         @click.stop="openMenu(index, item)"
+        @mouseover="mouseMenu(index)"
+        @mouseleave="leaveMenu"
       >
-        <div>
+        <div class="menu-text-box">
           <i :class="['iconfont',item.icon]"></i>
-          <span class="menu-text">{{item.title}}</span>
+          <span class="menu-text" :style="{opacity: unfold?'1':'0'}">{{item.title}}</span>
         </div>
-        <i :class="['el-icon-arrow-down', {'open': open === index}]"></i>
+        <i
+          :class="['el-icon-arrow-down', {'open': open === index}]"
+          :style="{opacity: unfold?'1':'0'}"
+        ></i>
+        <div
+          class="floating-menu-item"
+          :style="`width:${showFloatingMenuItem===index?'200px':'0px'}; height:${item.children && showFloatingMenuItem===index?item.children.length*40+'px;':'0px;'}`"
+        >
+          <router-link
+            v-for="(i, ind) in item.children"
+            :key="ind"
+            :to="{path: i.path}"
+          >
+            <div
+              :class="['menu-single', {'active': active===ind && menuActive === null}]"
+              :style="`font-size:${i.level==1?16:16-((i.level-1)*2)}px; display:flex;justify-content: center;`"
+              @click.stop="activeMenu(ind)"
+            >
+              <div class="menu-text-box">
+                <i :class="['iconfont',i.icon]"></i>
+                <span class="menu-text">{{i.title}}</span>
+              </div>
+            </div>
+          </router-link>
+        </div>
       </div>
       <div
         class="menu-item"
-        :style="{height: item.children && open === index?item.children.length*40+'px':'0px'}"
+        :style="{height: unfold && item.children && open === index?item.children.length*40+'px':'0px'}"
       >
         <router-link
           v-for="(i, ind) in item.children"
@@ -30,7 +56,7 @@
             :style="`font-size:${i.level==1?16:16-((i.level-1)*2)}px; padding: 0 20px 0 ${i.level*20}px;`"
             @click.stop="activeMenu(ind)"
           >
-            <div>
+            <div class="menu-text-box">
               <i :class="['iconfont',i.icon]"></i>
               <span class="menu-text">{{i.title}}</span>
             </div>
@@ -52,16 +78,13 @@
         menuActive: null,
         active: null,
         open: null,
+        showFloatingMenuItem: null
       }
     },
     props: {
-      selected: {
-        type: Number,
-        default: 0
-      },
-      menuOpen: {
-        type: Number,
-        default: 0
+      unfold: {
+        type: Boolean,
+        default: true
       }
     },
     watch: {
@@ -113,13 +136,27 @@
         this.menuActive = null
       },
       openMenu(index, item) {
+        if(!item.children){
+          this.menuActive = index
+          return
+        }
+        if(!this.unfold){
+          return
+        }
         if(index == this.open) {
           this.open = null
         }else{
           this.open = index
         }
-        if(!item.children){
-          this.menuActive = index
+      },
+      mouseMenu(index) {
+        if(!this.unfold){
+          this.showFloatingMenuItem = index
+        }
+      },
+      leaveMenu() {
+        if(!this.unfold){
+          this.showFloatingMenuItem = null
         }
       }
     }
@@ -134,25 +171,48 @@
     .menu-single{
       width: 100%;
       height: 40px;
-      transition: background .5s, color .5s;
+      transition: background .5s, color .5s, width .5s;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
       &:hover{
         background: $theme-colors;
         color: white;
       }
-      .menu-text{
-        margin-left: 6px;
+      .menu-text-box{
+        display: flex;
+        align-items: center;
+        &>i{
+          margin-right: 6px;
+          transition: opacity .5s;
+        }
+        .menu-text{
+          display: block;
+          transition: opacity .4s;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
+      .floating-menu-item{
+        background: white;
+        position: absolute;
+        left: calc(100% + 5px);
+        top: 0;
+        z-index: 9999;
+        box-shadow: 0 0 10px #bbbbbb;
+        border-radius: 6px;
+        transition: width .5s, height .5s;
+        overflow: hidden;
       }
     }
     .el-icon-arrow-down{
       font-weight: bold;
       font-size: 14px;
-      transition: transform .5s;
+      transition: transform .5s, opacity .5s;
     }
     .menu-item{
-      transition: height .5s;
+      transition: height .5s,;
       overflow: hidden;
     }
     .active{
