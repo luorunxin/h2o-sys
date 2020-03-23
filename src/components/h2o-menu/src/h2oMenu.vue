@@ -30,7 +30,7 @@
             :to="{path: i.path}"
           >
             <div
-              :class="['menu-single', {'active': active===ind && menuActive === null}]"
+              :class="['menu-single', {'active': active===ind && menuActive === null && path==i.path}]"
               :style="`font-size:${i.level==1?16:16-((i.level-1)*2)}px; display:flex;justify-content: center;`"
               @click.stop="activeMenu(ind)"
             >
@@ -52,9 +52,9 @@
           :to="{path: i.path}"
         >
           <div
-            :class="['menu-single', {'active': active===ind && menuActive === null}]"
+            :class="['menu-single', {'active': active===ind && menuActive === null && path==i.path}]"
             :style="`font-size:${i.level==1?16:16-((i.level-1)*2)}px; padding: 0 20px 0 ${i.level*20}px;`"
-            @click.stop="activeMenu(ind)"
+            @click.stop="activeMenu(ind, i.path)"
           >
             <div class="menu-text-box">
               <i :class="['iconfont',i.icon]"></i>
@@ -78,7 +78,8 @@
         menuActive: null,
         active: null,
         open: null,
-        showFloatingMenuItem: null
+        showFloatingMenuItem: null,
+        path: null
       }
     },
     props: {
@@ -120,6 +121,7 @@
                 if(this.menus[i].children[key].path === fullPath) {
                   this.open = parseInt(i)
                   this.active = parseInt(key)
+                  this.path = this.menus[i].children[key].path
                   this.menuActive = null
                   break;
                 }
@@ -131,15 +133,12 @@
       }
     },
     methods: {
-      activeMenu(index) {
+      activeMenu(index, path) {
+        this.path = path
         this.active = index
         this.menuActive = null
       },
       openMenu(index, item) {
-        if(!item.children){
-          this.menuActive = index
-          return
-        }
         if(!this.unfold){
           return
         }
@@ -147,6 +146,9 @@
           this.open = null
         }else{
           this.open = index
+        }
+        if(!item.children){
+          this.menuActive = index
         }
       },
       mouseMenu(index) {

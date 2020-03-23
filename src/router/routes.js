@@ -6,6 +6,9 @@ import {basicLayout, pageView} from '@/layouts'
 
 const GoodsList = () => import('@/views/goods/goodsList');
 const AddUpdateGoods = () => import('@/views/goods/addUpdateGoods');
+const PermissionList = () => import('@/views/permissionsManage/permissionList');
+const Duty = () => import('@/views/permissionsManage/duty');
+const RoleList = () => import('@/views/permissionsManage/roleList');
 
 export default [
   {
@@ -38,6 +41,33 @@ export default [
             component: AddUpdateGoods,
             meta: {title: '添加商品'},
           }
+        ]
+      },
+      {
+        path: '/permissionsManage',
+        name: 'permissionsManage',
+        component: pageView,
+        redirect: '/permissionsManage/roleList',
+        meta: {title: '权限管理', level: 1, icon: 'icon-quanxianguanli'},
+        children: [
+          {
+            path: '/permissionsManage/permissionList',
+            name: 'permissionsManage_permissionList',
+            component: PermissionList,
+            meta: {title: '权限', level: 2, icon: 'icon-icon--quanxian'},
+          },
+          {
+            path: '/permissionsManage/duty',
+            name: 'permissionsManage_duty',
+            component: Duty,
+            meta: {title: '职务', level: 2, icon: 'icon-zhiwu'},
+          },
+          {
+            path: '/permissionsManage/roleList',
+            name: 'permissionsManage_roleList',
+            component: RoleList,
+            meta: {title: '角色', level: 2, icon: 'icon-jiaose'},
+          },
         ]
       },
 

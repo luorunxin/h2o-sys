@@ -135,7 +135,7 @@
           <!--<el-button @click="handleClick(scope.row)" type="text" size="mini">详情</el-button>-->
           <el-button style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
           <el-popconfirm
-            :title="`确定删除 '${scope.row.title}' 此商品吗？`"
+            :title="`确定删除 '${scope.row.title}' 这个商品吗？`"
             @onConfirm="deleteRow(scope.row)"
           >
             <el-button slot="reference" type="text" size="mini">删除</el-button>
