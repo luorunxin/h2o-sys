@@ -116,6 +116,7 @@
               title: '提示',
               message: '权限保存成功!'
             })
+            this.getPermissionsList()
           }else{
             this.$notify.error({
               title: '提示',
@@ -155,14 +156,17 @@
         }
       },
       submitForm(formName) {
+        let flag = true
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$refs['tree'].getCurrentNode().label = this.form.label
             this.$refs['tree'].getCurrentNode().identify = this.form.identify
           } else {
+            flag = false
             return false;
           }
         })
+        return flag
       },
       addTreeNode() {
         let newNode = {
