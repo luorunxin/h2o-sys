@@ -8,7 +8,9 @@ const GoodsList = () => import('@/views/goods/goodsList');
 const AddUpdateGoods = () => import('@/views/goods/addUpdateGoods');
 const PermissionList = () => import('@/views/permissionsManage/permissionList');
 const Duty = () => import('@/views/permissionsManage/duty');
+const AddUpdateDuty = () => import('@/views/permissionsManage/addUpdateDuty');
 const RoleList = () => import('@/views/permissionsManage/roleList');
+const AddUpdateRole = () => import('@/views/permissionsManage/AddUpdateRole');
 
 export default [
   {
@@ -39,7 +41,7 @@ export default [
             path: '/goods/addUpdateGoods',
             name: 'goods_addUpdateGoods',
             component: AddUpdateGoods,
-            meta: {title: '添加商品'},
+            meta: {title: '编辑商品'},
           }
         ]
       },
@@ -47,7 +49,7 @@ export default [
         path: '/permissionsManage',
         name: 'permissionsManage',
         component: pageView,
-        redirect: '/permissionsManage/roleList',
+        redirect: '/permissionsManage/permissionList',
         meta: {title: '权限管理', level: 1, icon: 'icon-quanxianguanli'},
         children: [
           {
@@ -63,10 +65,22 @@ export default [
             meta: {title: '职务', level: 2, icon: 'icon-zhiwu'},
           },
           {
+            path: '/permissionsManage/AddUpdateDuty',
+            name: 'permissionsManage_AddUpdateDuty',
+            component: AddUpdateDuty,
+            meta: {title: '编辑职务'},
+          },
+          {
             path: '/permissionsManage/roleList',
             name: 'permissionsManage_roleList',
             component: RoleList,
             meta: {title: '角色', level: 2, icon: 'icon-jiaose'},
+          },
+          {
+            path: '/permissionsManage/AddUpdateRole',
+            name: 'permissionsManage_AddUpdateRole',
+            component: AddUpdateRole,
+            meta: {title: '编辑角色'},
           },
         ]
       },

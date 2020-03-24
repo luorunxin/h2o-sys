@@ -9,8 +9,7 @@
         <el-tree
           ref="tree"
           :data="data"
-          show-checkbox
-          node-key="tree_id"
+          node-key="id"
           highlight-current
           empty-text="暂无数据，请点击【添加】按钮进行添加"
           :expand-on-click-node="false"
@@ -19,7 +18,7 @@
         >
         </el-tree>
       </div>
-      <div class="block" v-show="form.tree_id" @click.stop="stopP($event)">
+      <div class="block" v-show="form.id" @click.stop="stopP($event)">
         <el-form
           ref="form"
           :model="form"
@@ -41,6 +40,9 @@
         </el-form>
       </div>
     </div>
+    <div class="submit-tree">
+      <el-button type="primary" size="small" @click.stop="submitTree()">提交</el-button>
+    </div>
   </div>
 </template>
 
@@ -49,11 +51,11 @@
     name: "duty",
     data() {
       return {
-        tree_id: 1,
+        id: 1,
         data: [],
         defaultExpanded: [],
         form: {
-          tree_id: null,
+          id: null,
           label: '',
           identify: ''
         },
@@ -75,11 +77,60 @@
           _this.setFormEmpty()
         }
       }
+      this.getPermissionsList()
+    },
+    destroyed() {
+      document.onclick = null
     },
     methods: {
+      getPermissionsList() {
+        const loading = this.$loading({
+          target: document.querySelector('.permission-list'),
+          text: '加载中...',
+        })
+        this.$ajax('/getPermissionsList').then(res => {
+          if(res.status == 200) {
+            this.data = res.result.data
+            this.id = res.result.start_id
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          loading.close()
+        }).catch(err => {
+          console.error(err)
+          loading.close()
+        })
+      },
+      submitTree() {
+        if(!this.submitForm('form')) return;
+        const loading = this.$loading({
+          target: document.querySelector('.permission-list'),
+          text: '加载中...',
+        })
+        this.$ajax('/insertPermission',JSON.stringify(this.data)).then(res => {
+          if(res.status == 200){
+            this.$notify.success({
+              title: '提示',
+              message: '权限保存成功!'
+            })
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          loading.close()
+        }).catch(err => {
+          console.error(err)
+          loading.close()
+        })
+      },
       setFormEmpty() {
         this.form = {
-          tree_id: null,
+          id: null,
           label: '',
           identify: ''
         }
@@ -91,8 +142,9 @@
           window.event.cancelBubble = true;
         }
         Object.assign(this.form, {
-          tree_id: this.$refs['tree'].getCurrentNode().tree_id,
-          label: this.$refs['tree'].getCurrentNode().label
+          id: this.$refs['tree'].getCurrentNode().id,
+          label: this.$refs['tree'].getCurrentNode().label,
+          identify: this.$refs['tree'].getCurrentNode().identify
         })
       },
       stopP(e) {
@@ -103,13 +155,10 @@
         }
       },
       submitForm(formName) {
-        // const loading = this.$loading({
-        //   target: document.querySelector('.permission-list'),
-        //   text: '提交中...',
-        // })
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log('submit')
+            this.$refs['tree'].getCurrentNode().label = this.form.label
+            this.$refs['tree'].getCurrentNode().identify = this.form.identify
           } else {
             return false;
           }
@@ -117,25 +166,50 @@
       },
       addTreeNode() {
         let newNode = {
-          tree_id: this.tree_id++,
-          label: ''
+          id: this.id++,
+          label: '请重新输入权限名称',
+          identify: ''
         }
         if(!this.$refs['tree'].getCurrentKey()){
+          newNode.parent_id = 0
           this.data.push(newNode)
         }else{
+          newNode.parent_id = this.$refs['tree'].getCurrentKey()
           this.$refs['tree'].append(newNode,this.$refs['tree'].getCurrentKey())
         }
         Object.assign(this.form, newNode)
         this.$nextTick(() => {
-          this.$refs['tree'].setCurrentKey(newNode.tree_id)
+          this.$refs['tree'].setCurrentKey(newNode.id)
           this.defaultExpanded.push(this.$refs['tree'].getCurrentKey())
         })
       },
       removeTreeNode() {
         if(this.$refs['tree'].getCurrentKey()) {
-          this.$refs['tree'].remove(this.$refs['tree'].getCurrentNode())
-          this.$refs['tree'].setCurrentKey(null)
-          this.setFormEmpty()
+          const loading = this.$loading({
+            target: document.querySelector('.permission-list'),
+            text: '加载中...',
+          })
+
+          this.$ajax('/deletePermissionById',JSON.stringify({id:this.$refs['tree'].getCurrentKey()})).then(res => {
+            if(res.status == 200) {
+              this.$notify.success({
+                title: '提示',
+                message: `'${this.$refs['tree'].getCurrentNode().label}' 权限已删除!`
+              })
+              this.$refs['tree'].remove(this.$refs['tree'].getCurrentNode())
+              this.$refs['tree'].setCurrentKey(null)
+              this.setFormEmpty()
+            }else{
+              this.$notify.error({
+                title: '提示',
+                message: res.message
+              })
+            }
+            loading.close()
+          }).catch(err => {
+            console.error(err)
+            loading.close()
+          })
         }else{
           this.$message({
             message: '至少得选择一个权限节点！',
@@ -143,20 +217,6 @@
           });
         }
       },
-      // append(data) {
-      //   const newChild = { id: id++, label: 'testtest', children: [] };
-      //   if (!data.children) {
-      //     this.$set(data, 'children', []);
-      //   }
-      //   data.children.push(newChild);
-      // },
-      //
-      // remove(node, data) {
-      //   const parent = node.parent;
-      //   const children = parent.data.children || parent.data;
-      //   const index = children.findIndex(d => d.id === data.id);
-      //   children.splice(index, 1);
-      // }
     }
   };
 </script>
@@ -169,6 +229,7 @@
       align-items: flex-start;
       justify-content: space-between;
       font-size: 14px;
+      margin: 20px 0;
       .block{
         flex: 1;
       }
@@ -177,8 +238,8 @@
         justify-content: center;
       }
     }
-    .btn-box{
-      margin-bottom: 20px;
+    .submit-tree{
+      text-align: center;
     }
   }
 </style>

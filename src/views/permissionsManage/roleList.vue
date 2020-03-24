@@ -15,7 +15,7 @@
               <span>{{ props.row.name }}</span>
             </el-form-item>
             <el-form-item label="性别">
-              <span>{{ props.row.gender }}</span>
+              <span>{{ props.row.gender==1?'男':'女' }}</span>
             </el-form-item>
             <el-form-item label="手机号">
               <span>{{ props.row.phone }}</span>
@@ -27,7 +27,7 @@
               <span>{{ props.row.permission }}</span>
             </el-form-item>
             <el-form-item label="创建时间">
-              <span>{{ props.row.create_time }}</span>
+              <span>{{ props.row.create_time | date}}</span>
             </el-form-item>
           </el-form>
         </template>
@@ -42,7 +42,9 @@
         prop="gender"
         width="100"
         show-overflow-tooltip
-        label="性别">
+        label="性别"
+      >
+        <template slot-scope="scope">{{scope.row.gender==1?'男':'女'}}</template>
       </el-table-column>
       <el-table-column
         prop="phone"
@@ -64,7 +66,9 @@
       <el-table-column
         prop="create_time"
         show-overflow-tooltip
-        label="创建日期">
+        label="创建日期"
+      >
+        <template slot-scope="scope">{{scope.row.create_time | date}}</template>
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -101,30 +105,80 @@
     name: "roleList",
     data() {
       return {
-        tableData: [
-          {
-            name: '张三',
-            gender: '男',
-            phone: '12134567890',
-            duty: '客服',
-            permission: '商品，权限管理商品，权限管理',
-            create_time: '2020-02-02 02:02:02',
-          }
-        ],
+        tableData: [],
         loading: false,
         page: 1,
         size: 10,
       }
     },
+    mounted() {
+      this.getRoleList()
+    },
     methods: {
       toAddUpdateRole() {
-
+        this.$router.push({
+          path: '/permissionsManage/AddUpdateRole',
+          query: {
+            type: 1
+          }
+        })
       },
       handleSizeChange(e) {
         this.size = e
       },
       handleCurrentChange(e) {
         this.page = e
+      },
+      getRoleList() {
+        this.loading = true
+        let params = {
+          page: this.page,
+          size: this.size
+        }
+        this.$ajax('/getRoleList',JSON.stringify(params)).then(res => {
+          if(res.status == 200) {
+            this.tableData = res.result
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          this.loading = false
+        }).catch(err => {
+          console.error(err)
+          this.loading = false
+        })
+      },
+      handleClick(row) {
+        this.$router.push({
+          path: '/permissionsManage/AddUpdateRole',
+          query: {
+            id: row.id,
+            type: 2
+          }
+        })
+      },
+      deleteRow(rows) {
+        this.loading = true
+        this.$ajax('/deleteRoleById', JSON.stringify({id: rows.id})).then(res=>{
+          if (res.status == 200) {
+            this.$notify.success({
+              title: '提示',
+              message: '角色删除成功啦!!!'
+            })
+            this.getDutes()
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          this.loading = false
+        }).catch(err=>{
+          console.log(err)
+          this.loading = false
+        })
       },
     }
   };

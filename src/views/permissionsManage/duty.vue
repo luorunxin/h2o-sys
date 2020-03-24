@@ -1,116 +1,186 @@
 <template>
-  <div class="custom-tree-container">
-    <div class="block">
-      <p>使用 render-content</p>
-      <el-tree
-        :data="data"
-        show-checkbox
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false">
-      </el-tree>
+  <div class="duty-container">
+    <div class="tabel-top">
+      <el-button @click="toAddUpdateDuty" type="primary" size="small">添加职务</el-button>
     </div>
-    <div class="block">
-      <p>使用 scoped slot</p>
-      <el-tree
-        :data="data"
-        show-checkbox
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false">
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
-        <span>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => append(data)">
-            Append
-          </el-button>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => remove(node, data)">
-            Delete
-          </el-button>
-        </span>
-      </span>
-      </el-tree>
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      v-loading="loading"
+    >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-width="80px" label-position="left" class="demo-table-expand">
+            <el-form-item label="职务名称">
+              <span>{{ props.row.duty_name }}</span>
+            </el-form-item>
+            <el-form-item label="权限">
+              <span>{{ props.row.permission_id }}</span>
+            </el-form-item>
+            <el-form-item label="创建时间">
+              <span>{{ props.row.create_time | date}}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="duty_name"
+        width="150"
+        show-overflow-tooltip
+        label="职务名称">
+      </el-table-column>
+      <el-table-column
+        prop="permission_id"
+        show-overflow-tooltip
+        label="权限">
+      </el-table-column>
+      <el-table-column
+        prop="create_time"
+        width="200"
+        show-overflow-tooltip
+        label="创建日期"
+      >
+        <template slot-scope="scope">{{scope.row.create_time | date}}</template>
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        width="90"
+        label="操作">
+        <template slot-scope="scope">
+          <el-button style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
+          <el-popconfirm
+            :title="`确定删除 '${scope.row.duty_name}' 这个职务吗？`"
+            @onConfirm="deleteRow(scope.row)"
+          >
+            <el-button slot="reference" type="text" size="mini">删除</el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="pagination">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="page"
+        :page-size="size"
+        :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+        layout="total, prev, pager, next, sizes, jumper"
+        :total="tableData.length">
+      </el-pagination>
     </div>
   </div>
 </template>
 
 <script>
-  let id = 1000;
   export default {
     name: "duty",
     data() {
-      const data = [{
-        id: 1,
-        label: '一级 1',
-        children: [{
-          id: 4,
-          label: '二级 1-1',
-          children: [{
-            id: 9,
-            label: '三级 1-1-1'
-          }, {
-            id: 10,
-            label: '三级 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: '一级 2',
-        children: [{
-          id: 5,
-          label: '二级 2-1'
-        }, {
-          id: 6,
-          label: '二级 2-2'
-        }]
-      }, {
-        id: 3,
-        label: '一级 3',
-        children: [{
-          id: 7,
-          label: '二级 3-1'
-        }, {
-          id: 8,
-          label: '二级 3-2'
-        }]
-      }];
       return {
-        data: JSON.parse(JSON.stringify(data)),
+        tableData: [],
+        loading: false,
+        page: 1,
+        size: 10,
       }
     },
-
+    mounted() {
+      this.getDutes()
+    },
     methods: {
-      append(data) {
-        const newChild = { id: id++, label: 'testtest', children: [] };
-        if (!data.children) {
-          this.$set(data, 'children', []);
-        }
-        data.children.push(newChild);
+      toAddUpdateDuty() {
+        this.$router.push({
+          path: '/permissionsManage/AddUpdateDuty',
+          query: {
+            type: 1
+          }
+        })
       },
-
-      remove(node, data) {
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.id === data.id);
-        children.splice(index, 1);
-      }
+      getDutes() {
+        this.loading = true
+        let params = {
+          page: this.page,
+          size: this.size
+        }
+        this.$ajax('/getDutes',JSON.stringify(params)).then(res => {
+          if(res.status == 200) {
+            this.tableData = res.result
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          this.loading = false
+        }).catch(err => {
+          console.error(err)
+          this.loading = false
+        })
+      },
+      handleSizeChange(e) {
+        this.size = e
+      },
+      handleCurrentChange(e) {
+        this.page = e
+      },
+      handleClick(row) {
+        this.$router.push({
+          path: '/permissionsManage/AddUpdateDuty',
+          query: {
+            id: row.id,
+            type: 2
+          }
+        })
+      },
+      deleteRow(rows) {
+        this.loading = true
+        this.$ajax('/deleteDutyById', JSON.stringify({id: rows.id})).then(res=>{
+          if (res.status == 200) {
+            this.$notify.success({
+              title: '提示',
+              message: '职务删除成功啦!!!'
+            })
+            this.getDutes()
+          }else{
+            this.$notify.error({
+              title: '提示',
+              message: res.message
+            })
+          }
+          this.loading = false
+        }).catch(err=>{
+          console.log(err)
+          this.loading = false
+        })
+      },
     }
-  };
+  }
 </script>
 
 <style lang="scss" scoped>
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
+  .duty-container{
+    padding: 20px;
+    .tabel-top {
+      padding-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pagination {
+      margin-top: 20px;
+    }
+
+    .demo-table-expand label {
+      color: #99a9bf;
+    }
+
+    .demo-table-expand .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+
+      .price {
+        color: red;
+      }
+    }
   }
 </style>

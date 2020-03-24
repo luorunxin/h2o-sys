@@ -229,12 +229,11 @@
             type: 2
           }
         })
-
       },
       //删除行
       deleteRow(rows) {
         this.loading = true
-        this.$ajax('http://192.168.0.103:3003/deleteGoodsById', {id: rows.id}).then(res=>{
+        this.$ajax('/deleteGoodsById', {id: rows.id}).then(res=>{
           if (res.status == 200) {
             this.$notify.success({
               title: '提示',
