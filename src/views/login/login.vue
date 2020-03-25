@@ -76,7 +76,7 @@
                   message: `${res.result.name}! 欢迎您回来！`
                 })
                 Storage.setSession('user_info', res.result)
-                if(!Storage.getLocal('keep_pwd')){
+                if(!Storage.getLocal('keep_pwd') && this.savePwd){
                   let keep_pwd = {
                     phone: this.form.phone,
                     password: this.form.password,
