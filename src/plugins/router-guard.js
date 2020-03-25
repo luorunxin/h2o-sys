@@ -1,3 +1,5 @@
+import Storage from '@/utils/storage.js'
+
 /**
  *  导航守卫
  */
@@ -5,16 +7,19 @@
 import Router from '@/router'
 
 Router.beforeEach((to, from, next) => {
-  console.log('router before each')
+  if(to.path == '/login'){
+    if(from.path != '/login') {
+      Storage.setLocal('current_path', from.fullPath)
+    }
+    Storage.removeSession('user_info')
+  }
   next()
 })
 
 Router.beforeResolve((to, from, next) => {
-  console.log('router before resolve')
   next()
 })
 
-Router.afterEach((to, from) => {
-  console.log('router after each')
-  console.log(to, from)
+Router.afterEach(() => {
+
 })

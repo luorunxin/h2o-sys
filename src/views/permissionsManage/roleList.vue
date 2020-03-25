@@ -20,6 +20,9 @@
             <el-form-item label="手机号">
               <span>{{ props.row.phone }}</span>
             </el-form-item>
+            <el-form-item label="密码">
+              <span>{{ props.row.password }}</span>
+            </el-form-item>
             <el-form-item label="职务">
               <span>{{ props.row.duty }}</span>
             </el-form-item>

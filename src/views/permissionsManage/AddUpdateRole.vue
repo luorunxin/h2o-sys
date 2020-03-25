@@ -19,7 +19,10 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
-        <el-input class="w30" v-model="form.phone" placeholder="请输入手机号" clearable></el-input>
+        <el-input class="w30" v-model="form.phone" maxlength="11" placeholder="请输入手机号" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input class="w30" v-model="form.password" show-password maxlength="16" minlength="6" placeholder="请输入密码" clearable></el-input>
       </el-form-item>
       <el-form-item label="职务" prop="duty_id">
         <el-select class="w30" v-model="form.duty_id" filterable placeholder="请选择职务">
@@ -42,11 +45,19 @@
   export default {
     name: "AddUpdateRole",
     data() {
+      var validatePhone = (rule, value, callback) => {
+        if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(value)) {
+          callback(new Error('请输入正确的手机号'));
+        } else {
+          callback();
+        }
+      };
       return {
         form: {
           name: '',
           gender: 1,
           phone: '',
+          password: '',
           duty_id: null,
           dutes: []
         },
@@ -58,7 +69,10 @@
             {required: true, message: '请选择性别', trigger: ['blur', 'change']}
           ],
           phone: [
-            {required: true, message: '请输入手机号', trigger: ['blur', 'change']}
+            {required: true, validator: validatePhone, trigger: ['blur', 'change']}
+          ],
+          password: [
+            {required: true, message: '请输入密码', trigger: ['blur', 'change']}
           ],
           duty_id: [
             {required: true, message: '请选择职务', trigger: ['blur', 'change']}
@@ -93,7 +107,7 @@
       },
       getRoleById() {
         const loading = this.$loading({
-          target: document.querySelector('.permission-list'),
+          target: document.querySelector('.top-form'),
           text: '加载中...',
         })
         let params = {
@@ -119,7 +133,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             const loading = this.$loading({
-              target: document.querySelector('.permission-list'),
+              target: document.querySelector('.top-form'),
               text: '提交中...',
             })
             this.$ajax('/addUpdateRole',JSON.stringify(this.form)).then(res => {

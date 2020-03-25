@@ -25,7 +25,7 @@
             trigger="hover"
             popper-class="logout-box"
           >
-            <div class="logout">
+            <div class="logout" @click.stop="logout">
               <i class="iconfont icon-tuichu"></i>
               退出登陆
             </div>
@@ -43,6 +43,7 @@
 
 <script>
   import Menu from '@/components/h2o-menu'
+  import Storage from '@/utils/storage.js'
   export default {
     name: "basicLayout",
     components: {
@@ -56,6 +57,10 @@
     methods: {
       shrink() {
         this.unfold = !this.unfold
+      },
+      logout() {
+        Storage.removeLocal('keep_pwd')
+        this.$router.push('/login')
       }
     }
   };

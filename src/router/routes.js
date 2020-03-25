@@ -4,6 +4,7 @@ import {basicLayout, pageView} from '@/layouts'
  路由配置
  */
 
+const Login = () => import('@/views/login/login');
 const GoodsList = () => import('@/views/goods/goodsList');
 const AddUpdateGoods = () => import('@/views/goods/addUpdateGoods');
 const PermissionList = () => import('@/views/permissionsManage/permissionList');
@@ -88,7 +89,11 @@ export default [
 
     ],
   },
-
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
   {
     path: '*',
     redirect: '/404',
