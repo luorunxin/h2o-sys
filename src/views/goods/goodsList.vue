@@ -6,7 +6,6 @@
     <el-table
       :data="tableData"
       style="width: 100%"
-      max-height="1400"
       v-loading="loading"
     >
       <el-table-column type="expand">
@@ -79,7 +78,7 @@
       </el-table-column>
       <el-table-column
         prop="title"
-        max-width="300"
+        min-width="300"
         label="标题">
       </el-table-column>
       <el-table-column

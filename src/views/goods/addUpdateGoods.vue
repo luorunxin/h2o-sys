@@ -10,7 +10,7 @@
       class="top-form"
     >
       <el-form-item label="标题" prop="title">
-        <el-input class="w30" v-model="form.title" placeholder="请输入标题" clearable></el-input>
+        <el-input class="w30" maxlength="40" v-model="form.title" placeholder="请输入标题" clearable></el-input>
       </el-form-item>
       <el-form-item label="价格" prop="price">
         <el-input @input="checkPrice" class="w30" v-model="form.price" placeholder="请输入价格" clearable></el-input>

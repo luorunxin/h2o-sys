@@ -11,7 +11,7 @@ Router.beforeEach((to, from, next) => {
     if(from.path != '/login') {
       Storage.setLocal('current_path', from.fullPath)
     }
-    Storage.removeSession('user_info')
+    Storage.removeLocal('user_info')
   }
   next()
 })

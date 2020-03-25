@@ -59,8 +59,11 @@
         this.unfold = !this.unfold
       },
       logout() {
-        Storage.removeLocal('keep_pwd')
-        this.$router.push('/login')
+        let userInfo = Storage.getLocal('user_info')
+        this.$ajax('/logout',JSON.stringify({phone: userInfo.phone})).then(() => {
+          Storage.removeLocal('keep_pwd')
+          this.$router.push('/login')
+        }).catch(err => {console.error(err)})
       }
     }
   };

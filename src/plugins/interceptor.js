@@ -11,7 +11,7 @@ let axios = Axios.create({
 
 function getAccessToken(config) {
   return new Promise((resolve,reject) => {
-    let userInfo = Storage.getSession('user_info')
+    let userInfo = Storage.getLocal('user_info')
     if(!userInfo) return router.push('/login')
     let params = {
         refresh_token: userInfo.refresh_token,
@@ -33,7 +33,9 @@ function getAccessToken(config) {
               message: res.data.message
             })
           }
-          router.push('/login')
+          axios.post('/logout',{phone: userInfo.phone}).then(() => {
+            router.push('/login')
+          }).catch(err => {reject(err)})
         }
       }).catch(err => {reject(err)})
   })
