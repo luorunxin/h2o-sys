@@ -24,7 +24,7 @@ function getAccessToken(config) {
           axios.post(config.url,JSON.parse(config.data)).then(re => {
             resolve(re)
           })
-          Storage.setSession('user_info', userInfo)
+          Storage.setLocal('user_info', userInfo)
         }
         if(res.data.status == 401){
           if(!Storage.getLocal('keep_pwd')){
@@ -42,7 +42,7 @@ function getAccessToken(config) {
 }
 
 axios.interceptors.request.use(req => {
-  let userInfo = Storage.getSession('user_info')
+  let userInfo = Storage.getLocal('user_info')
   req.headers.access_token = userInfo && userInfo.access_token
   // req.headers.refresh_token = userInfo.refresh_token
   return req

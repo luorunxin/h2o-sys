@@ -170,9 +170,9 @@
         typesList: []
       }
     },
-    mounted() {
-      this.getCategoryList()
-      this.getTypesList()
+    async mounted() {
+      await this.getCategoryList()
+      await this.getTypesList()
       this.goodsList()
     },
     methods: {
@@ -252,21 +252,27 @@
         })
       },
       getCategoryList() {
-        this.$ajax('/getCategoryList').then(res => {
-          if (res.status == 200) {
-            this.categoryList = res.result
-          }
-        }).catch(err => {
-          console.error(err)
+        return new Promise(resolve => {
+          this.$ajax('/getCategoryList').then(res => {
+            if (res.status == 200) {
+              this.categoryList = res.result
+              resolve()
+            }
+          }).catch(err => {
+            console.error(err)
+          })
         })
       },
       getTypesList() {
-        this.$ajax('/getTypesList').then(res => {
-          if (res.status == 200) {
-            this.typesList = res.result
-          }
-        }).catch(err => {
-          console.error(err)
+        return new Promise(resolve => {
+          this.$ajax('/getTypesList').then(res => {
+            if (res.status == 200) {
+              this.typesList = res.result
+              resolve()
+            }
+          }).catch(err => {
+            console.error(err)
+          })
         })
       },
     },
