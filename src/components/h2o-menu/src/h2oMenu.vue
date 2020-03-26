@@ -69,6 +69,7 @@
 
 <script>
   import routes from '@/router/routes.js'
+  import Storage from '@/utils/storage.js'
   export default {
     name: "h2oMenuUnfold",
     data() {
@@ -109,6 +110,15 @@
                 })
               }
               this.menus.push(obj)
+            }
+          })
+          let permissions = Storage.getLocal('user_permissions')
+          this.menus.forEach((item,index) => {
+            let arr = permissions.filter(per => {
+              return per.identify == item.permission
+            })
+            if(arr.length<1){
+              this.menus.splice(index, 1)
             }
           })
           let fullPath = to.fullPath

@@ -1,6 +1,6 @@
 <template>
   <div class="duty-container">
-    <div class="tabel-top">
+    <div class="tabel-top" v-show="permissions.add_duty">
       <el-button @click="toAddUpdateDuty" type="primary" size="small">添加职务</el-button>
     </div>
     <el-table
@@ -45,12 +45,15 @@
       <el-table-column
         fixed="right"
         width="90"
-        label="操作">
+        label="操作"
+        v-if="permissions.update_duty || permissions.delete_duty"
+      >
         <template slot-scope="scope">
-          <el-button style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
+          <el-button v-show="permissions.update_duty" style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
           <el-popconfirm
             :title="`确定删除 '${scope.row.duty_name}' 这个职务吗？`"
             @onConfirm="deleteRow(scope.row)"
+            v-show="permissions.delete_duty"
           >
             <el-button slot="reference" type="text" size="mini">删除</el-button>
           </el-popconfirm>

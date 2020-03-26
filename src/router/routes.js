@@ -30,13 +30,13 @@ export default [
         name: 'goods',
         component: pageView,
         redirect: '/goods/list',
-        meta: {title: '商品', level: 1, icon: 'icon-shangpinliebiao'},
+        meta: {title: '商品', level: 1, icon: 'icon-shangpinliebiao', permission: 'goods'},
         children: [
           {
             path: '/goods/list',
             name: 'goods_list',
             component: GoodsList,
-            meta: {title: '商品列表', level: 2, icon: 'icon-shangpinliebiao1'},
+            meta: {title: '商品列表', level: 2, icon: 'icon-shangpinliebiao1', permission: 'goods_list'},
           },
           {
             path: '/goods/addUpdateGoods',
@@ -51,19 +51,19 @@ export default [
         name: 'permissionsManage',
         component: pageView,
         redirect: '/permissionsManage/permissionList',
-        meta: {title: '权限管理', level: 1, icon: 'icon-quanxianguanli'},
+        meta: {title: '权限管理', level: 1, icon: 'icon-quanxianguanli', permission: 'permissions_manage'},
         children: [
           {
             path: '/permissionsManage/permissionList',
             name: 'permissionsManage_permissionList',
             component: PermissionList,
-            meta: {title: '权限', level: 2, icon: 'icon-icon--quanxian'},
+            meta: {title: '权限', level: 2, icon: 'icon-icon--quanxian', permission: 'permission'},
           },
           {
             path: '/permissionsManage/duty',
             name: 'permissionsManage_duty',
             component: Duty,
-            meta: {title: '职务', level: 2, icon: 'icon-zhiwu'},
+            meta: {title: '职务', level: 2, icon: 'icon-zhiwu', permission: 'duty'},
           },
           {
             path: '/permissionsManage/AddUpdateDuty',
@@ -75,7 +75,7 @@ export default [
             path: '/permissionsManage/roleList',
             name: 'permissionsManage_roleList',
             component: RoleList,
-            meta: {title: '角色', level: 2, icon: 'icon-jiaose'},
+            meta: {title: '角色', level: 2, icon: 'icon-jiaose', permission: 'role'},
           },
           {
             path: '/permissionsManage/AddUpdateRole',

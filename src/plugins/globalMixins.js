@@ -1,7 +1,16 @@
+import Storage from '@/utils/storage.js'
 export default {
   data() {
+    let permissions = Storage.getLocal('user_permissions')
+    if(permissions){
+      let arr = {}
+      permissions.forEach(item => {
+        arr[item.identify] = true
+      })
+      permissions = arr
+    }
     return {
-
+      permissions: permissions
     }
   },
   methods: {

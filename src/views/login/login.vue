@@ -12,7 +12,7 @@
         class="top-form"
       >
         <el-form-item label="账号" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入账号" clearable></el-input>
+          <el-input v-model="form.phone" maxlength="11" placeholder="请输入账号" clearable></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" show-password maxlength="16" minlength="6" placeholder="请输入密码" clearable></el-input>
@@ -75,6 +75,12 @@
                   title: '提示',
                   message: `${res.result.name}! 欢迎您回来！`
                 })
+                let user_duty = res.result.duty
+                let user_permissions = res.result.permissions
+                Storage.setLocal('user_duty', user_duty)
+                Storage.setLocal('user_permissions', user_permissions)
+                delete res.result.duty
+                delete res.result.permissions
                 Storage.setLocal('user_info', res.result)
                 if(!Storage.getLocal('keep_pwd') && this.savePwd){
                   let keep_pwd = {

@@ -1,8 +1,8 @@
 <template>
   <div class="permission-list">
-    <div class="btn-box">
-      <el-button @click.stop="addTreeNode" type="primary" size="small">添加</el-button>
-      <el-button @click.stop="removeTreeNode" type="danger" size="small">删除</el-button>
+    <div class="btn-box" v-show="permissions.add_permission || permissions.delete_permission">
+      <el-button v-show="permissions.add_permission" @click.stop="addTreeNode" type="primary" size="small">添加</el-button>
+      <el-button v-show="permissions.delete_permission" @click.stop="removeTreeNode" type="danger" size="small">删除</el-button>
     </div>
     <div class="custom-tree-container">
       <div class="block">
@@ -40,7 +40,7 @@
         </el-form>
       </div>
     </div>
-    <div class="submit-tree">
+    <div class="submit-tree" v-show="permissions.submit_permission">
       <el-button type="primary" size="small" @click.stop="submitTree()">提交</el-button>
     </div>
   </div>

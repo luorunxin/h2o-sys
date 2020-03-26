@@ -1,6 +1,6 @@
 <template>
   <div class="goodsList">
-    <div class="tabel-top">
+    <div class="tabel-top" v-show="permissions.add_goods">
       <el-button @click="toAddUpdateGoods" type="primary" size="small">添加商品</el-button>
     </div>
     <el-table
@@ -129,13 +129,16 @@
       <el-table-column
         fixed="right"
         width="90"
-        label="操作">
+        label="操作"
+        v-if="permissions.update_goods || permissions.delete_goods"
+      >
         <template slot-scope="scope">
           <!--<el-button @click="handleClick(scope.row)" type="text" size="mini">详情</el-button>-->
-          <el-button style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
+          <el-button v-show="permissions.update_goods" style="margin-right: 10px" @click="handleClick(scope.row)" type="text" size="mini">编辑</el-button>
           <el-popconfirm
             :title="`确定删除 '${scope.row.title}' 这个商品吗？`"
             @onConfirm="deleteRow(scope.row)"
+            v-show="permissions.delete_goods"
           >
             <el-button slot="reference" type="text" size="mini">删除</el-button>
           </el-popconfirm>
