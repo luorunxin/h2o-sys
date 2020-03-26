@@ -91,8 +91,9 @@
                   }
                   Storage.setLocal('keep_pwd', keep_pwd)
                 }
-                if(Storage.getLocal('current_path')){
-                  this.$router.push(Storage.getLocal('current_path'))
+                let currentPath = Storage.getLocal('current_path')
+                if(currentPath && currentPath.phone == this.form.phone){
+                  this.$router.push(currentPath.path)
                   Storage.removeLocal('current_path')
                 }else{
                   this.$router.push('/')

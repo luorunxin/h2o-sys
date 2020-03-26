@@ -1,4 +1,4 @@
-import {basicLayout, pageView} from '@/layouts'
+import {basicLayout, menuView, pageView} from '@/layouts'
 
 /**
  路由配置
@@ -28,60 +28,96 @@ export default [
       {
         path: '/goods',
         name: 'goods',
-        component: pageView,
-        redirect: '/goods/list',
+        component: menuView,
+        redirect: '/goodsList',
         meta: {title: '商品', level: 1, icon: 'icon-shangpinliebiao', permission: 'goods'},
         children: [
           {
             path: '/goods/list',
             name: 'goods_list',
-            component: GoodsList,
+            component: pageView,
+            redirect: '/goodsList',
             meta: {title: '商品列表', level: 2, icon: 'icon-shangpinliebiao1', permission: 'goods_list'},
+            children: [
+              {
+                path: '/goodsList',
+                name: 'goods_list',
+                component: GoodsList,
+                meta: {title: '商品列表',},
+              },
+              {
+                path: '/goods/addUpdateGoods',
+                name: 'goods_addUpdateGoods',
+                component: AddUpdateGoods,
+                meta: {title: '编辑商品'},
+              }
+            ]
           },
-          {
-            path: '/goods/addUpdateGoods',
-            name: 'goods_addUpdateGoods',
-            component: AddUpdateGoods,
-            meta: {title: '编辑商品'},
-          }
         ]
       },
       {
         path: '/permissionsManage',
         name: 'permissionsManage',
-        component: pageView,
+        component: menuView,
         redirect: '/permissionsManage/permissionList',
         meta: {title: '权限管理', level: 1, icon: 'icon-quanxianguanli', permission: 'permissions_manage'},
         children: [
           {
-            path: '/permissionsManage/permissionList',
+            path: '/permissionsManage/permission',
             name: 'permissionsManage_permissionList',
-            component: PermissionList,
+            component: pageView,
+            redirect: '/permissionsManage/permissionList',
             meta: {title: '权限', level: 2, icon: 'icon-icon--quanxian', permission: 'permission'},
+            children: [
+              {
+                path: '/permissionsManage/permissionList',
+                name: 'permissionsManage_permissionList',
+                component: PermissionList,
+                meta: {title: '权限列表'},
+              },
+            ]
           },
           {
             path: '/permissionsManage/duty',
             name: 'permissionsManage_duty',
-            component: Duty,
+            component: pageView,
+            redirect: '/permissionsManage/dutyList',
             meta: {title: '职务', level: 2, icon: 'icon-zhiwu', permission: 'duty'},
+            children: [
+              {
+                path: '/permissionsManage/dutyList',
+                name: 'permissionsManage_duty',
+                component: Duty,
+                meta: {title: '职务列表',},
+              },
+              {
+                path: '/permissionsManage/AddUpdateDuty',
+                name: 'permissionsManage_AddUpdateDuty',
+                component: AddUpdateDuty,
+                meta: {title: '编辑职务'},
+              },
+            ]
           },
           {
-            path: '/permissionsManage/AddUpdateDuty',
-            name: 'permissionsManage_AddUpdateDuty',
-            component: AddUpdateDuty,
-            meta: {title: '编辑职务'},
-          },
-          {
-            path: '/permissionsManage/roleList',
+            path: '/permissionsManage/role',
             name: 'permissionsManage_roleList',
-            component: RoleList,
+            component: pageView,
+            redirect: '/permissionsManage/roleList',
             meta: {title: '角色', level: 2, icon: 'icon-jiaose', permission: 'role'},
-          },
-          {
-            path: '/permissionsManage/AddUpdateRole',
-            name: 'permissionsManage_AddUpdateRole',
-            component: AddUpdateRole,
-            meta: {title: '编辑角色'},
+            children: [
+              {
+                path: '/permissionsManage/roleList',
+                name: 'permissionsManage_roleList',
+                component: RoleList,
+                meta: {title: '角色'},
+              },
+              {
+                path: '/permissionsManage/AddUpdateRole',
+                name: 'permissionsManage_AddUpdateRole',
+                component: AddUpdateRole,
+                meta: {title: '编辑角色'},
+              },
+            ]
           },
         ]
       },

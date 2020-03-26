@@ -5,8 +5,9 @@
         v-for="(item, index) in breadcrumbs"
         :key="index"
         :to="{ path: !item.path?'/':item.path }"
+        v-show="!item.meta.breadHidden"
       >
-        {{item.title}}
+        {{item.meta.title}}
       </el-breadcrumb-item>
     </el-breadcrumb>
   </div>
@@ -29,7 +30,7 @@
           matched.forEach(item => {
             let obj = {}
             obj.path = item.path
-            obj.title = item.meta.title
+            obj.meta = {...item.meta}
             this.breadcrumbs.push(obj)
           })
         },
