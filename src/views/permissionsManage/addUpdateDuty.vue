@@ -23,6 +23,7 @@
           :data="data"
           node-key="id"
           show-checkbox
+          check-strictly
           default-expand-all
           empty-text="暂无权限数据"
           check-on-click-node

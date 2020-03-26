@@ -33,11 +33,15 @@ function getAccessToken(config) {
               message: res.data.message
             })
           }
-          axios.post('/logout',{phone: userInfo.phone}).then(() => {
-            router.push('/login')
-          }).catch(err => {reject(err)})
+          axios.post('/logout',{phone: userInfo.phone}).then(res => {
+            if(res.data.status == 401){
+              router.push('/login')
+            }
+          })
         }
-      }).catch(err => {reject(err)})
+      }).catch(err => {
+        reject(err)
+      })
   })
 }
 

@@ -170,7 +170,7 @@
               title: '提示',
               message: '角色删除成功啦!!!'
             })
-            this.getDutes()
+            this.getRoleList()
           }else{
             this.$notify.error({
               title: '提示',

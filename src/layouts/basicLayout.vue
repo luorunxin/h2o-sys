@@ -31,7 +31,7 @@
             </div>
             <div class="personal" slot="reference">
               <i class="el-icon-s-custom"></i>
-              <span>罗某人</span>
+              <span>{{userName}}</span>
             </div>
           </el-popover>
         </div>
@@ -51,8 +51,12 @@
     },
     data() {
       return {
-        unfold: true
+        unfold: true,
+        userName: ''
       }
+    },
+    mounted() {
+      this.userName = Storage.getLocal('user_info').name
     },
     methods: {
       shrink() {
