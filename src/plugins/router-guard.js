@@ -11,7 +11,7 @@ Router.beforeEach((to, from, next) => {
     if(from.path != '/login') {
       Storage.setLocal('current_path', {
         path: from.fullPath,
-        phone: Storage.getLocal('user_info').phone
+        phone: Storage.getLocal('user_info') && Storage.getLocal('user_info').phone || ''
       })
     }
     Storage.removeLocal('user_info')

@@ -203,12 +203,12 @@
         })
       },
       submitForm(formName) {
-        const loading = this.$loading({
-          target: document.querySelector('.top-form'),
-          text: '提交中...',
-        })
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            const loading = this.$loading({
+              target: document.querySelector('.top-form'),
+              text: '提交中...',
+            })
             this.form.price = parseFloat(this.form.price)
             this.form.courier_fees = parseFloat(this.form.courier_fees)
             this.form.clothing_amounts.forEach(item => {

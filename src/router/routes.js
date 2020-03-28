@@ -109,7 +109,7 @@ export default [
                 path: '/permissionsManage/roleList',
                 name: 'permissionsManage_roleList',
                 component: RoleList,
-                meta: {title: '角色'},
+                meta: {title: '角色列表'},
               },
               {
                 path: '/permissionsManage/AddUpdateRole',

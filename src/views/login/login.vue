@@ -12,10 +12,10 @@
         class="top-form"
       >
         <el-form-item label="账号" prop="phone">
-          <el-input v-model="form.phone" maxlength="11" placeholder="请输入账号" clearable></el-input>
+          <el-input @keyup.enter.native="submitForm('form')" v-model="form.phone" maxlength="11" placeholder="请输入账号" clearable></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" show-password maxlength="16" minlength="6" placeholder="请输入密码" clearable></el-input>
+          <el-input @keyup.enter.native="submitForm('form')" v-model="form.password" show-password maxlength="16" minlength="6" placeholder="请输入密码" clearable></el-input>
         </el-form-item>
         <el-form-item>
           <el-checkbox v-model="savePwd">记住密码</el-checkbox>

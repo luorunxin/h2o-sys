@@ -154,7 +154,7 @@
         :page-size="size"
         :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
         layout="total, prev, pager, next, sizes, jumper"
-        :total="tableData.length">
+        :total="total">
       </el-pagination>
     </div>
   </div>
@@ -170,7 +170,8 @@
         tableData: [],
         loading: false,
         categoryList: [],
-        typesList: []
+        typesList: [],
+        total: 0
       }
     },
     async mounted() {
@@ -188,6 +189,7 @@
         this.$ajax('/goodsList', JSON.stringify(params)).then(res => {
           this.loading = false
           if (res.status == 200) {
+            this.total = res.total
             this.tableData = res.result
             this.tableData.forEach(item => {
               item.parameters = this.getParameters(item.parameter)
