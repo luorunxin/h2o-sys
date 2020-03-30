@@ -44,6 +44,7 @@
 <script>
   import Menu from '@/components/h2o-menu'
   import Storage from '@/utils/storage.js'
+  import BASEURL from '@/utils/baseURL.js'
   export default {
     name: "basicLayout",
     components: {
@@ -52,23 +53,107 @@
     data() {
       return {
         unfold: true,
-        userName: ''
+        userName: '',
+        user: null,
+        socket: null,
+        timer: null,
+        user_info: null
       }
     },
     mounted() {
-      this.userName = Storage.getLocal('user_info').name
+      this.user_info = Storage.getLocal('user_info')
+      this.userName = this.user_info.name
+      this.initWebSocket()
+    },
+    destroyed() {
+      this.close()
     },
     methods: {
       shrink() {
         this.unfold = !this.unfold
       },
       logout() {
-        let userInfo = Storage.getLocal('user_info')
-        this.$ajax('/logout',JSON.stringify({phone: userInfo.phone})).then(() => {
+        this.$ajax('/logout',JSON.stringify({phone: this.user_info.phone})).then(() => {
           Storage.removeLocal('keep_pwd')
+          this.close()
           this.$router.push('/login')
         }).catch(err => {console.error(err)})
-      }
+      },
+      initWebSocket() {
+        if (window.WebSocket || window.MozWebSocket){
+          let address = BASEURL.socket + '/service'
+          this.socket = new WebSocket(address)
+          this.open()
+        }else{
+          this.$notify.info({
+            title: '提示',
+            message: '当前客户端不支持客服聊天功能'
+          })
+        }
+      },
+      open() {
+        console.log('正在连接...')
+        this.socket.onopen = () => {
+          this.send()
+          this.message()
+          this.setIntervalSend()
+        }
+      },
+      send(data) {
+        if(this.socket.readyState != 1) return
+        let userInfo = {
+          ...this.user_info,
+          type: 'service'
+        }
+        if(this.user) userInfo.user = this.user
+        if(data) userInfo.message = data
+        this.socket.send(JSON.stringify(userInfo))
+      },
+      message() {
+        let _this = this
+        this.socket.onmessage = function (msg) {
+          _this.user = JSON.parse(msg.data)
+          // _this.talkContent.push({
+          //   name: 'l-talk-left',
+          //   text: msg.data
+          // })
+          _this.$notify.success({
+            title: '消息提醒',
+            duration: 0,
+            position: 'bottom-right',
+            dangerouslyUseHTMLString: true,
+            message: `<a class="message-box" href="javascript:;">
+          <h4>用户(${_this.user.phone})向你发送消息:</h4>
+          <p style="white-space: nowrap;
+  width: 250px;
+  overflow: hidden;
+  text-overflow:ellipsis;">${_this.user.message}</p>
+          </a>`
+          });
+        }
+      },
+      close() {
+        let _this = this
+        this.socket.close()
+        this.socket.onclose = function () {
+          console.log('连接关闭')
+          clearInterval(_this.timer)
+        }
+      },
+      setIntervalSend() {
+        this.timer = setInterval(() => {
+          this.socket.send('791618513')
+        }, 5000)
+      },
+      // sendtext() {
+      //   if(!this.textareaVal) return
+      //   this.send(this.textareaVal)
+      //   this.talkContent.push({
+      //     name: 'l-talk-right',
+      //     text: this.textareaVal
+      //   })
+      //   this.textareaVal = ''
+      // },
     }
   };
 </script>

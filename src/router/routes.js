@@ -12,6 +12,7 @@ const Duty = () => import('@/views/permissionsManage/duty');
 const AddUpdateDuty = () => import('@/views/permissionsManage/addUpdateDuty');
 const RoleList = () => import('@/views/permissionsManage/roleList');
 const AddUpdateRole = () => import('@/views/permissionsManage/AddUpdateRole');
+const UserList = () => import('@/views/user/userList');
 
 export default [
   {
@@ -116,6 +117,30 @@ export default [
                 name: 'permissionsManage_AddUpdateRole',
                 component: AddUpdateRole,
                 meta: {title: '编辑角色'},
+              },
+            ]
+          },
+        ]
+      },
+      {
+        path: '/user',
+        name: 'user',
+        component: menuView,
+        redirect: '/userList',
+        meta: {title: '用户', level: 1, icon: 'icon-yonghu', permission: 'user'},
+        children: [
+          {
+            path: '/user/list',
+            name: 'user_list',
+            component: pageView,
+            redirect: '/userList',
+            meta: {title: '用户列表', level: 2, icon: 'icon-yonghuliebiao', permission: 'user_list'},
+            children: [
+              {
+                path: '/userList',
+                name: 'userList',
+                component: UserList,
+                meta: {title: '用户列表',},
               },
             ]
           },
