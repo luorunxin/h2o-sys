@@ -59,7 +59,7 @@
         socket: null,
         timer: null,
         user_info: null,
-        notify: null
+        notify: []
       }
     },
     mounted() {
@@ -79,6 +79,8 @@
     },
     methods: {
       ...mapActions([
+        'actionSetConnect',
+        'actionSetSocket',
         'actionPushConnect',
         'actionUnshiftConnect',
         'actionSetSelectConnect',
@@ -99,6 +101,7 @@
         if (window.WebSocket || window.MozWebSocket){
           let address = BASEURL.socket + '/service'
           this.socket = new WebSocket(address)
+          this.$store.dispatch('actionSetSocket', this.socket)
           this.open()
         }else{
           this.$notify.info({
@@ -129,11 +132,26 @@
         let _this = this
         this.socket.onmessage = function (msg) {
           let userData = JSON.parse(msg.data)
+          if(userData.isMatching){
+            for(let c in _this.connect){
+              if(_this.connect[c].phone === userData.phone){
+                let conData = _this.connect
+                conData[c].isMatching = true
+                _this.$store.dispatch('actionSetConnect', conData)
+              }
+            }
+            for(let n in _this.notify){
+              if(_this.notify[n].phone === userData.phone){
+                _this.notify[n].notify.close()
+              }
+            }
+            return
+          }
           _this.user.push(userData)
           let connect = _this.connect
           for(let i in connect){
             if(connect[i].phone === userData.phone &&
-              parseInt(_this.selectConnect)==i){
+              parseInt(_this.selectConnect)==i && !connect[i].isMatching){
               let data = {
                 index: i,
                 content: {
@@ -147,7 +165,7 @@
           }
 
           let h = _this.$createElement
-          _this.notify = _this.$notify.success({
+          let notify = _this.$notify.success({
             title: '消息提醒',
             duration: 0,
             position: 'bottom-right',
@@ -161,7 +179,7 @@
                     click: () => {
                       _this.$store.dispatch('actionSetShowTalk',true)
                       for(let i in connect){
-                        if(connect[i].phone === userData.phone){
+                        if(connect[i].phone === userData.phone && !connect[i].isMatching){
                           let data = {
                             index: i,
                             content: {
@@ -182,7 +200,7 @@
                       })
                       _this.$store.dispatch('actionPushConnect',userData)
                       _this.$store.dispatch('actionSetSelectConnect',`${_this.connect.length-1}`)
-                      _this.closeNotify()
+                      _this.closeNotify(userData.phone)
                     }
                   }
                 },
@@ -202,6 +220,10 @@
   //         <p>${_this.user.message}</p>
   //         </a>`
           });
+          _this.notify.push({
+            notify,
+            phone: userData.phone
+          })
         }
       },
       close() {
@@ -212,8 +234,12 @@
           clearInterval(_this.timer)
         }
       },
-      closeNotify() {
-        this.notify.close()
+      closeNotify(phone) {
+        for(let n in this.notify){
+          if(this.notify[n].phone === phone){
+            this.notify[n].notify.close()
+          }
+        }
       },
       setIntervalSend() {
         this.timer = setInterval(() => {

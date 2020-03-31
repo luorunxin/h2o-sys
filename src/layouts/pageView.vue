@@ -12,25 +12,27 @@
       <el-tab-pane
         v-for="(item,index) in connect"
         :key="item.phone"
-        :label="`与(${item.phone})的对话`"
+        :label="item.isMatching?'对方已离线':`与(${item.phone})的对话`"
         :name="`${index}`"
       >
-        <div class="talk-container" v-show="showTalk">
-          <div class="withCenter">
-            <component
-              v-for="(it, index) in item.talkContent"
-              :key="index"
-              :is="it.name"
-              :text="it.text"
-            />
+        <keep-alive>
+          <div class="talk-container" v-show="showTalk">
+            <div class="withCenter">
+              <component
+                v-for="(it, index) in item.talkContent"
+                :key="index"
+                :is="it.name"
+                :text="it.text"
+              />
+            </div>
+            <div class="input-group">
+              <l-textarea
+                v-model="textareaVal"
+              />
+              <button class="l-button" @click.stop="sendtext(item)">发送</button>
+            </div>
           </div>
-          <div class="input-group">
-            <l-textarea
-              v-model="textareaVal"
-            />
-            <button class="l-button" @click.stop="sendtext">发送</button>
-          </div>
-        </div>
+        </keep-alive>
         <div v-show="!showTalk">
           <Breadcrumb />
           <router-view />
@@ -52,6 +54,7 @@
   import LTalkLeft from '@/components/l-talk-left'
   import LTalkRight from '@/components/l-talk-right'
   import {mapState,mapActions} from 'vuex'
+  import Storage from '@/utils/storage.js'
   export default {
     name: "pageView",
     components: {
@@ -69,6 +72,8 @@
     computed: {
       ...mapState([
         'showTalk',
+        'socket',
+        'connect'
       ]),
       connect: {
         get() {
@@ -91,7 +96,8 @@
       ...mapActions([
         'actionUnshiftConnect',
         'actionSetShowTalk',
-        'actionSetSelectConnect'
+        'actionSetSelectConnect',
+        'actionSetMessage'
       ]),
       removeTab(name) {
         let index = parseInt(name)
@@ -108,6 +114,33 @@
       },
       selectTab() {
         this.$store.dispatch('actionSetShowTalk',true)
+      },
+      sendtext(record) {
+        let user = {
+          phone: record.phone,
+          access_token: record.access_token
+        }
+        let info = Storage.getLocal('user_info')
+        info.user = user
+        info.type = 'service'
+        info.message = this.textareaVal
+        if(!record.isMatching){
+          this.socket.send(JSON.stringify(info))
+        }
+        this.textareaVal = ''
+        for(let i in this.connect){
+          if(this.connect[i].phone === record.phone && !this.connect[i].isMatching){
+            let data = {
+              index: i,
+              content: {
+                name: 'l-talk-right',
+                text: info.message
+              }
+            }
+            this.$store.dispatch('actionSetMessage',data)
+            return
+          }
+        }
       }
     }
   };
