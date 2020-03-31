@@ -70,6 +70,7 @@
 <script>
   import routes from '@/router/routes.js'
   import Storage from '@/utils/storage.js'
+  import {mapActions} from 'vuex'
   export default {
     name: "h2oMenuUnfold",
     data() {
@@ -143,10 +144,16 @@
       }
     },
     methods: {
+      ...mapActions([
+        'actionUnshiftConnect',
+        'actionSetShowTalk',
+        'actionSetSelectConnect'
+      ]),
       activeMenu(index, path) {
         this.path = path
         this.active = index
         this.menuActive = null
+        this.$store.dispatch('actionSetShowTalk', false)
       },
       openMenu(index, item) {
         if(!this.unfold){

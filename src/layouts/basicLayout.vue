@@ -45,6 +45,7 @@
   import Menu from '@/components/h2o-menu'
   import Storage from '@/utils/storage.js'
   import BASEURL from '@/utils/baseURL.js'
+  import {mapActions, mapState} from 'vuex'
   export default {
     name: "basicLayout",
     components: {
@@ -54,10 +55,11 @@
       return {
         unfold: true,
         userName: '',
-        user: null,
+        user: [],
         socket: null,
         timer: null,
-        user_info: null
+        user_info: null,
+        notify: null
       }
     },
     mounted() {
@@ -68,7 +70,21 @@
     destroyed() {
       this.close()
     },
+    computed: {
+      ...mapState([
+        'connect',
+        'selectConnect',
+        'showTalk',
+      ])
+    },
     methods: {
+      ...mapActions([
+        'actionPushConnect',
+        'actionUnshiftConnect',
+        'actionSetSelectConnect',
+        'actionSetShowTalk',
+        'actionSetMessage'
+      ]),
       shrink() {
         this.unfold = !this.unfold
       },
@@ -105,30 +121,86 @@
           ...this.user_info,
           type: 'service'
         }
-        if(this.user) userInfo.user = this.user
+        if(this.user.length>0) userInfo.user = this.user
         if(data) userInfo.message = data
         this.socket.send(JSON.stringify(userInfo))
       },
       message() {
         let _this = this
         this.socket.onmessage = function (msg) {
-          _this.user = JSON.parse(msg.data)
-          // _this.talkContent.push({
-          //   name: 'l-talk-left',
-          //   text: msg.data
-          // })
-          _this.$notify.success({
+          let userData = JSON.parse(msg.data)
+          _this.user.push(userData)
+          let connect = _this.connect
+          for(let i in connect){
+            if(connect[i].phone === userData.phone &&
+              parseInt(_this.selectConnect)==i){
+              let data = {
+                index: i,
+                content: {
+                  name: 'l-talk-left',
+                  text: userData.message
+                }
+              }
+              _this.$store.dispatch('actionSetMessage',data)
+              return
+            }
+          }
+
+          let h = _this.$createElement
+          _this.notify = _this.$notify.success({
             title: '消息提醒',
             duration: 0,
             position: 'bottom-right',
             dangerouslyUseHTMLString: true,
-            message: `<a class="message-box" href="javascript:;">
-          <h4>用户(${_this.user.phone})向你发送消息:</h4>
-          <p style="white-space: nowrap;
-  width: 250px;
-  overflow: hidden;
-  text-overflow:ellipsis;">${_this.user.message}</p>
-          </a>`
+            message:
+              h('a',
+                {
+                  class:'message-box',
+                  href:'javascript:;',
+                  on: {
+                    click: () => {
+                      _this.$store.dispatch('actionSetShowTalk',true)
+                      for(let i in connect){
+                        if(connect[i].phone === userData.phone){
+                          let data = {
+                            index: i,
+                            content: {
+                              name: 'l-talk-left',
+                              text: userData.message
+                            }
+                          }
+                          _this.$store.dispatch('actionSetMessage',data)
+                          _this.$store.dispatch('actionSetSelectConnect',`${i}`)
+                          _this.closeNotify()
+                          return
+                        }
+                      }
+                      userData.talkContent = []
+                      userData.talkContent.push({
+                        name: 'l-talk-left',
+                        text: userData.message
+                      })
+                      _this.$store.dispatch('actionPushConnect',userData)
+                      _this.$store.dispatch('actionSetSelectConnect',`${_this.connect.length-1}`)
+                      _this.closeNotify()
+                    }
+                  }
+                },
+                [
+                  h('h4',
+                    null,
+                    `用户(${JSON.parse(msg.data).phone})向你发送消息:`
+                  ),
+                  h('p',
+                    null,
+                    `${JSON.parse(msg.data).message}`
+                  )
+                ]
+              )
+  //             `<a @click="connectUser" class="message-box" href="javascript:;">
+  //         <h4>用户(${_this.user.phone})向你发送消息:</h4>
+  //         <p>${_this.user.message}</p>
+  //         </a>`
           });
         }
       },
@@ -139,6 +211,9 @@
           console.log('连接关闭')
           clearInterval(_this.timer)
         }
+      },
+      closeNotify() {
+        this.notify.close()
       },
       setIntervalSend() {
         this.timer = setInterval(() => {
