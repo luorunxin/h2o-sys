@@ -8,6 +8,7 @@
       :placeholder="placeholder"
       v-model="text"
       @keyup="changeValue($event)"
+      @keyup.enter="enter"
     ></textarea>
   </div>
 </template>
@@ -52,6 +53,9 @@
       }
     },
     methods: {
+      enter() {
+        this.$emit('onEnter')
+      },
       changeValue(e) {
         e.target.style.height = this.$refs['tacover'].offsetHeight + 'px'
         e.target.parentNode.style.height = this.$refs['tacover'].offsetHeight + 'px'
@@ -75,7 +79,7 @@
       outline: none;
       border: none;
       border-radius: 6px;
-      overflow-y: visible;
+      /*overflow-y: visible;*/
       position: absolute;
       bottom: 0;
       z-index: 999;

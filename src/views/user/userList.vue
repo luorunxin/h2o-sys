@@ -11,7 +11,10 @@
             <el-form-item label="手机号">
               <span>{{ props.row.phone }}</span>
             </el-form-item>
-            <el-form-item label="登陆地址">
+            <el-form-item label="定位地址">
+              <span>{{ props.row.location }}</span>
+            </el-form-item>
+            <el-form-item label="登陆ip">
               <span>{{ props.row.origin }}</span>
             </el-form-item>
             <el-form-item label="登陆设备">
@@ -29,9 +32,14 @@
         label="手机号">
       </el-table-column>
       <el-table-column
+        prop="location"
+        show-overflow-tooltip
+        label="定位地址">
+      </el-table-column>
+      <el-table-column
         prop="origin"
         show-overflow-tooltip
-        label="登陆地址">
+        label="登陆ip">
       </el-table-column>
       <el-table-column
         prop="user_agent"
@@ -75,6 +83,7 @@
             origin: '',
             user_agent: '',
             login_time: '',
+            location: ''
           }
         ],
         loading: false,

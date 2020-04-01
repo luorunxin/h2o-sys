@@ -28,6 +28,7 @@
             <div class="input-group">
               <l-textarea
                 v-model="textareaVal"
+                @onEnter="sendtext(item)"
               />
               <button class="l-button" @click.stop="sendtext(item)">发送</button>
             </div>
@@ -100,7 +101,14 @@
         'actionSetMessage'
       ]),
       removeTab(name) {
-        let index = parseInt(name)
+        let index = parseInt(name), user = {}
+        if(!this.connect[index].isMatching) {
+          user.phone = this.connect[index].phone
+          user.access_token = this.connect[index].access_token
+          user.type = 'service'
+          user.serviceClose = true
+          this.socket.send(JSON.stringify(user))
+        }
         this.$store.dispatch('actionUnshiftConnect',index)
         if(this.connect.length>0){
           if(this.connect[index]){
@@ -116,6 +124,10 @@
         this.$store.dispatch('actionSetShowTalk',true)
       },
       sendtext(record) {
+        this.textareaVal = this.textareaVal.replace(/[\r\n]/g,"");
+        if(this.textareaVal == '' || this.textareaVal == null || this.textareaVal == undefined){
+          return false
+        }
         let user = {
           phone: record.phone,
           access_token: record.access_token
