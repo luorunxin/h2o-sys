@@ -118,11 +118,11 @@
       },
       handleSizeChange(e) {
         this.size = e
-        this.goodsList()
+        this.userList()
       },
       handleCurrentChange(e) {
         this.page = e
-        this.goodsList()
+        this.userList()
       },
     },
   };
