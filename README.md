@@ -13,6 +13,12 @@
 ## 接口文档
 <http://www.docway.net/project/1TgraVuL6cz/1TgtAhfeBWa>
 
+## h2o商城移动端
+<https://github.com/luorunxin/h2o-app>
+
+## h2o后端node代码
+<https://github.com/luorunxin/h2o-service>
+
 ## Build Setup
 ```
 yarn install
