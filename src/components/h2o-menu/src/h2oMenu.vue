@@ -122,14 +122,19 @@
               this.menus.splice(index, 1)
             }
           })
-          let fullPath = to.fullPath
+          let menuPath = null
+          for(let i in to.matched){
+            if(to.matched[i].path === to.path){
+              menuPath = to.matched[i-1].path
+            }
+          }
           for(let i in this.menus){
-            if(this.menus[i].path === fullPath){
+            if(this.menus[i].path === menuPath){
               this.menuActive = parseInt(i)
               break;
             }else {
               for(let key in this.menus[i].children){
-                if(this.menus[i].children[key].path === fullPath) {
+                if(this.menus[i].children[key].path === menuPath) {
                   this.open = parseInt(i)
                   this.active = parseInt(key)
                   this.path = this.menus[i].children[key].path

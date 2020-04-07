@@ -1,6 +1,19 @@
-# h2o-sys
+# h2o管理系统
+---
+> 从零架构，结构清晰，逻辑清晰
 
-## Project setup
+## 主要技术
+---
+> vue@2.0 + vuex + vue-router + element + scss + websocket
+
+## 项目预览
+---
+![image](https://github.com/luorunxin/h2o-app/src/static/pc1.png)
+![image](https://github.com/luorunxin/h2o-app/src/static/pc2.png)
+![image](https://github.com/luorunxin/h2o-app/src/static/pc3.png)
+![image](https://github.com/luorunxin/h2o-app/src/static/pc4.png)
+
+## Build Setup
 ```
 yarn install
 ```
@@ -19,6 +32,3 @@ yarn build
 ```
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
