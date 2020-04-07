@@ -19,6 +19,12 @@
 ## h2o后端node代码
 <https://github.com/luorunxin/h2o-service>
 
+## 系统目前已有的登陆账号
+> 超管：18888888888
+> 普通管理员：18999999999
+> 员工账号：19000000000
+> 统一密码：123456
+
 ## Build Setup
 ```
 yarn install
